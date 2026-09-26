@@ -2,40 +2,41 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
 
-  const { query, apiKey } = req.body || req.query;
-  
+  const query = req.method === 'POST' ? req.body?.query : req.query?.query;
+  const apiKey = req.method === 'POST' ? req.body?.apiKey : req.query?.apiKey;
+
   if (!query || !apiKey) {
-    return res.status(400).json({ error: 'Paramètres manquants' });
+    return res.status(400).json({ error: 'Paramètres manquants', query, apiKey: apiKey ? 'présente' : 'absente' });
   }
 
   try {
-    const searchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&language=fr&key=${apiKey}`;
-    const searchResp = await fetch(searchUrl);
-    const searchData = await searchResp.json();
+    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&language=fr&key=${apiKey}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
 
-    if (searchData.status === 'REQUEST_DENIED') {
-      return res.status(403).json({ error: 'Clé API invalide' });
+    if (data.status === 'REQUEST_DENIED') {
+      return res.status(403).json({ error: 'Clé API invalide', details: data.error_message });
     }
 
-    const places = (searchData.results || []).slice(0, 10);
+    const places = (data.results || []).slice(0, 10);
     const results = [];
 
     for (const place of places) {
-      const detailUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=name,formatted_address,website,formatted_phone_number,rating,user_ratings_total&language=fr&key=${apiKey}`;
-      const detailResp = await fetch(detailUrl);
-      const detailData = await detailResp.json();
-      const det = detailData.result || {};
+      const durl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=name,formatted_address,website,formatted_phone_number,rating,user_ratings_total&language=fr&key=${apiKey}`;
+      const dr = await fetch(durl);
+      const dd = await dr.json();
+      const det = dd.result || {};
 
       results.push({
         id: place.place_id,
         nom: det.name || place.name,
-        adresse: det.formatted_address || '',
+        adresse: det.formatted_address || place.formatted_address || '',
         website: det.website || '',
         tel: det.formatted_phone_number || '',
         rating: det.rating || 0,
@@ -44,7 +45,7 @@ export default async function handler(req, res) {
       });
     }
 
-    return res.status(200).json({ results });
+    return res.status(200).json({ results, total: results.length });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
