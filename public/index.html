@@ -362,8 +362,9 @@ async function doSearch(){
     return b.score-a.score;
   });
 
+const blocked=JSON.parse(localStorage.getItem('blocked_ids')||'[]');
   for(const p of scored){
-    if(!prospects.find(x=>x.id===p.id)) prospects.unshift(p);
+    if(!prospects.find(x=>x.id===p.id)&&!blocked.includes(p.id)) prospects.unshift(p);
   }
   save();
   renderResults();renderRoute();
@@ -384,8 +385,8 @@ function getQI(p){
 function renderResults(){
   const area=document.getElementById('results');
   if(!prospects.length){area.innerHTML='<div class="empty"><div class="ei">🎯</div>Configure ta clé API et lance la recherche</div>';return;}
-  const noSite=prospects.filter(p=>!p.hasWebsite);
-  const withSite=prospects.filter(p=>p.hasWebsite);
+const noSite=prospects.filter(p=>!p.hasWebsite&&!p.archived);
+const withSite=prospects.filter(p=>p.hasWebsite&&!p.archived);
   area.innerHTML='';
   if(noSite.length){
     const l=document.createElement('div');l.className='p-hdr';
@@ -430,7 +431,8 @@ function makeCard(p){
       <div class="act ${p.refused?'ano':''}" onclick="tog('${p.id}','refused')">${p.refused?'❌ Refus':'❌ Refus'}</div>
       ${p.tel?`<div class="act" onclick="window.location.href='tel:${p.tel.replace(/\s/g,'')}'">📞 Appeler</div>`:''}
       ${p.adresse?`<div class="act" onclick="openMaps('${p.adresse.replace(/'/g,"\\'")}')">📍 Maps</div>`:''}
-      <div class="act" style="color:var(--red)" onclick="del('${p.id}')">🗑</div>
+<div class="act" onclick="del('${p.id}')" style="color:var(--amber)">📦 Archiver</div>
+<div class="act" onclick="block('${p.id}')" style="color:var(--red)">🚫 Bloquer</div>
     </div>`;
   return div;
 }
@@ -444,9 +446,19 @@ function tog(id,field){
 }
 
 function del(id){
-  if(!confirm('Supprimer ce prospect ?'))return;
-  prospects=prospects.filter(p=>p.id!==id);
+  const p=prospects.find(x=>x.id===id);if(!p)return;
+  p.archived=true;
   save();renderResults();updateRetour();renderRoute();
+  toast('Entreprise archivée');
+}
+
+function block(id){
+  const p=prospects.find(x=>x.id===id);if(!p)return;
+  p.blocked=true;p.archived=true;
+  const blocked=JSON.parse(localStorage.getItem('blocked_ids')||'[]');
+  if(!blocked.includes(id)){blocked.push(id);localStorage.setItem('blocked_ids',JSON.stringify(blocked));}
+  save();renderResults();updateRetour();renderRoute();
+  toast('Entreprise bloquée — ne réapparaîtra plus');
 }
 
 function openMaps(addr){
