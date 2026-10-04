@@ -212,6 +212,8 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
     </div>
     <div class="kgrid">
       <div class="kpi"><div class="kv" id="k-no" style="color:var(--red)">0</div><div class="kl">Refus</div></div>
+      <div class="kpi"><div class="kv" id="k-hot" style="color:var(--amber)">0</div><div class="kl">🔥 Chauds</div></div>
+<div class="kpi"><div class="kv" id="k-called" style="color:var(--green)">0</div><div class="kl">Appelés</div></div>  
       <div class="kpi"><div class="kv" id="k-rt" style="color:var(--amber)">0%</div><div class="kl">Taux RDV</div></div>
       <div class="kpi"><div class="kv" id="k-sc" style="color:var(--green)">—</div><div class="kl">Score</div></div>
     </div>
@@ -425,7 +427,8 @@ function makeCard(p){
       <div class="st" style="color:${scC}">${sc}%</div>
     </div>
     <div class="c-acts">
-      <div class="act ${p.visited?'av':''}" onclick="tog('${p.id}','visited')">${p.visited?'✅ Visité':'👣 Visité'}</div>
+<div class="act ${p.called?'av':''}" onclick="tog('${p.id}','called')">${p.called?'📞 Appelé':'📞 Appeler'}</div>
+      <div class="act ${p.hot?'ar':''}" onclick="tog('${p.id}','hot')" style="${p.hot?'background:var(--amber-d);color:var(--amber);border-color:var(--amber)':''}">${p.hot?'🔥 Chaud ✓':'🔥 Prospect chaud'}</div>
       <div class="act ${p.rdv?'ar':''}" onclick="tog('${p.id}','rdv')">${p.rdv?'📅 RDV ✓':'📅 RDV'}</div>
       <div class="act ${p.refused?'ano':''}" onclick="tog('${p.id}','refused')">${p.refused?'❌ Refus':'❌ Refus'}</div>
       ${p.tel?`<div class="act" onclick="window.location.href='tel:${p.tel.replace(/\s/g,'')}'">📞 Appeler</div>`:''}
@@ -517,6 +520,8 @@ function updateRetour(){
   document.getElementById('k-r').textContent=r;
   document.getElementById('k-no').textContent=no;
   document.getElementById('k-rt').textContent=rt+'%';
+  document.getElementById('k-hot').textContent=prospects.filter(p=>p.hot).length;
+document.getElementById('k-called').textContent=prospects.filter(p=>p.called).length;
   document.getElementById('k-sc').textContent=sc;
   const vl=document.getElementById('vlist');
   const vp=prospects.filter(p=>p.visited);
