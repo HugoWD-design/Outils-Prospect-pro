@@ -181,15 +181,14 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
       <div class="fl">Présence physique</div>
       <select class="sel" id="f-pres">
         <option value="local">Local fixe (vitrine)</option>
-        <option value="tous">Tous types</option>
-      <div>
-        <div class="fl">Ancienneté de l'entreprise</div>
-        <select class="sel" id="f-age">
-          <option value="tous">Toutes</option>
-          <option value="recente">Récentes (- de 5 ans)</option>
-          <option value="moyenne">Moyennes (5-10 ans)</option>
-        </select>
-      </div>
+        <option value="tous">Tous types</option><div>
+  <div class="fl">Ancienneté de l'entreprise</div>
+  <select class="sel" id="f-age">
+    <option value="tous">Toutes</option>
+    <option value="recente">Récentes (- de 5 ans)</option>
+    <option value="moyenne">Moyennes (5-10 ans)</option>
+  </select>
+</div>
       </select>
     </div>
     <button class="go-btn" id="go-btn" onclick="doSearch()">🔍 Trouver de vrais prospects</button>
@@ -333,15 +332,13 @@ async function doSearch(){
   btn.disabled=true;
   document.getElementById('results').innerHTML='<div class="loading"><div class="spin"></div>Recherche de vraies entreprises...</div>';
   const ville=document.getElementById('f-ville').value;
-  const secteurs=[...activeChips];
-  const age=document.getElementById('f-age').value;
-  const ageQuery=age==='recente'?' créée récemment':age==='moyenne'?' fondée depuis 5 ans':'';
+  const secteurs=[...activeChips];const age=document.getElementById('f-age').value;
+const ageQuery=age==='recente'?' créée récemment':age==='moyenne'?' fondée depuis 5 ans':'';
   let allResults=[];
 
   for(const secteur of secteurs){
     try{
-      const params=new URLSearchParams({query:`${secteur} ${ville} France${ageQuery}`,apiKey});      const resp=await fetch(`${API_URL}?${params}`);
-      if(!resp.ok){
+const params=new URLSearchParams({query:`${secteur} ${ville} France${ageQuery}`,apiKey});      if(!resp.ok){
         const err=await resp.json();
         if(err.error==='Clé API invalide'){
           document.getElementById('results').innerHTML='<div class="empty"><div class="ei">❌</div>Clé API invalide.<br>Vérifie sur Google Cloud Console.</div>';
