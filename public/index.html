@@ -333,7 +333,8 @@ async function doSearch(){
   btn.disabled=true;
   document.getElementById('results').innerHTML='<div class="loading"><div class="spin"></div>Recherche de vraies entreprises...</div>';
   const ville=document.getElementById('f-ville').value;
-  const secteurs=[...activeChips];const age=document.getElementById('f-age').value;
+  const secteurs=[...activeChips];
+  const age=document.getElementById('f-age').value;
 const ageQuery=age==='recente'?' créée récemment':age==='moyenne'?' fondée depuis 5 ans':'';
   let allResults=[];
 
