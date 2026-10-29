@@ -184,14 +184,6 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
         <option value="tous">Tous types</option>
       </select>
     </div>
-    <div>
-      <div class="fl">Ancienneté de l'entreprise</div>
-      <select class="sel" id="f-age">
-        <option value="tous">Toutes</option>
-        <option value="recente">Récentes (- de 5 ans)</option>
-        <option value="moyenne">Moyennes (5-10 ans)</option>
-      </select>
-    </div>
     <button class="go-btn" id="go-btn" onclick="doSearch()">🔍 Trouver de vrais prospects</button>
   </div>
   <div class="results" id="results">
@@ -338,7 +330,9 @@ async function doSearch(){
 
   for(const secteur of secteurs){
     try{
-const params=new URLSearchParams({query:`${secteur} ${ville} France`,apiKey});
+      const params=new URLSearchParams({query:`${secteur} ${ville} France`,apiKey});
+      const resp=await fetch(`${API_URL}?${params}`);
+      if(!resp.ok){
         const err=await resp.json();
         if(err.error==='Clé API invalide'){
           document.getElementById('results').innerHTML='<div class="empty"><div class="ei">❌</div>Clé API invalide.<br>Vérifie sur Google Cloud Console.</div>';
