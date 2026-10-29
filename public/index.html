@@ -334,13 +334,11 @@ async function doSearch(){
   document.getElementById('results').innerHTML='<div class="loading"><div class="spin"></div>Recherche de vraies entreprises...</div>';
   const ville=document.getElementById('f-ville').value;
   const secteurs=[...activeChips];
-  const age=document.getElementById('f-age').value;
-const ageQuery=age==='recente'?' créée récemment':age==='moyenne'?' fondée depuis 5 ans':'';
   let allResults=[];
 
   for(const secteur of secteurs){
     try{
-const params=new URLSearchParams({query:`${secteur} ${ville} France${ageQuery}`,apiKey});      if(!resp.ok){
+const params=new URLSearchParams({query:`${secteur} ${ville} France`,apiKey});
         const err=await resp.json();
         if(err.error==='Clé API invalide'){
           document.getElementById('results').innerHTML='<div class="empty"><div class="ei">❌</div>Clé API invalide.<br>Vérifie sur Google Cloud Console.</div>';
