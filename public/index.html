@@ -170,18 +170,17 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
     <div>
       <div class="fl">Secteurs</div>
       <div class="chips" id="chips">
-        <div class="chip on" data-v="restaurant">🍽 Restaurant</div>
-        <div class="chip on" data-v="coiffeur">✂️ Coiffeur</div>
-        <div class="chip on" data-v="garage automobile">🚗 Garage</div>
+        <div class="chip on" data-v="peintre">🎨 Peintre</div>
         <div class="chip on" data-v="paysagiste">🌿 Paysagiste</div>
-        <div class="chip" data-v="plombier">🔧 Plombier</div>
+        <div class="chip on" data-v="menuisier">🪵 Menuisier</div>
+        <div class="chip on" data-v="couvreur">🏠 Couvreur</div>
         <div class="chip" data-v="maçon">🏗 Maçon</div>
-        <div class="chip" data-v="couvreur">🏠 Couvreur</div>
-        <div class="chip" data-v="peintre">🎨 Peintre</div>
-        <div class="chip" data-v="menuisier">🪵 Menuisier</div>
+        <div class="chip" data-v="plombier">🔧 Plombier</div>
+        <div class="chip" data-v="électricien">⚡ Électricien</div>
+        <div class="chip" data-v="garage automobile">🚗 Garage</div>
         <div class="chip" data-v="institut beauté">💅 Esthétique</div>
-        <div class="chip" data-v="boulangerie">🥐 Boulangerie</div>
-        <div class="chip" data-v="pharmacie">💊 Pharmacie</div>
+        <div class="chip" data-v="coiffeur">✂️ Coiffeur</div>
+        <div class="chip" data-v="restaurant">🍽 Restaurant</div>
       </div>
     </div>
     <div>
@@ -247,62 +246,77 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
       <div class="sec-lbl">📞 Script téléphone</div>
 
     <div class="step">
+      <div class="step-num">0</div>
+      <div class="step-body">
+        <div class="step-title">Avant d'appeler (30 s)</div>
+        <div class="step-note">Noter <b>1 observation précise</b> à citer : pas de site, site illisible sur téléphone, photos de chantier introuvables… (voir le 💡 sur la fiche).</div>
+        <div class="step-note">Passer : franchises, groupements, 300+ avis sans site depuis des années.</div>
+      </div>
+    </div>
+
+    <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
         <div class="step-title">Accroche + permission</div>
-        <div class="step-txt">"Bonjour, c'est bien [entreprise] ? Ok moi c'est Hugo."</div>
-        <div class="step-pause">⏸ Pause : il répond</div>
-        <div class="step-txt" style="margin-top:8px">"Bon je vous cache rien, c'est un appel de prospection, est ce que vous avez une trentaine de secondes ?"</div>
-        <div class="step-pause">⏸ Pause : il répond</div>
+        <div class="step-txt" style="margin-top:8px">"Bonjour, c'est bien [entreprise] ? … Moi c'est Hugo, de Novae Studio, à Nantes."</div>
+        <div class="step-pause">⏸ Il répond</div>
+        <div class="step-txt" style="margin-top:8px">"Je vous cache rien, c'est un appel de prospection. Vous m'accordez 30 secondes, et si ça vous parle pas je vous laisse tranquille ?"</div>
+        <div class="step-pause">⏸ Il répond</div>
       </div>
     </div>
 
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <div class="step-title">Question de découverte</div>
-        <div class="step-txt">"Merci. Je contacte des entreprises locales du coin, et j’ai regardé la vôtre en ligne avant de vous appeler : je n’ai pas vu de site. Du coup, aujourd’hui, comment vos clients vous trouvent ?"</div>
+        <div class="step-title">Observation + découverte</div>
+        <div class="step-txt" style="margin-top:8px">"J'ai regardé votre entreprise avant de vous appeler : [observation, ex. vous avez de très bons avis sur Google mais pas de site]. Aujourd'hui, vos nouveaux clients, ils vous trouvent comment ?"</div>
         <div class="step-pause">⏸ Tu écoutes, tu ne coupes pas</div>
-        <div class="step-note">S'il dit qu'il a un site : "Ah très bien, il est en ligne depuis quand ?"</div>
       </div>
     </div>
 
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <div class="step-title">Rebond selon sa réponse</div>
-        <div class="step-note" style="margin-bottom:8px">Une seule relance maximum. S'il répète qu'il n'en a pas besoin, tu remercies et tu raccroches.</div>
-        <div class="obj" style="margin-bottom:6px"><div class="oq">Bouche à oreille</div><div class="oa">"C'est la meilleure source, ça veut dire que vous faites du bon boulot. Quand quelqu'un vous est recommandé, il vous cherche souvent sur Google avant d'appeler. Qu'est-ce qu'il trouve sur vous ?"</div></div>
-        <div class="obj" style="margin-bottom:6px"><div class="oq">Facebook / Instagram</div><div class="oa">"Très bien, et si quelqu'un cherche [métier] [ville] sur Google, vous apparaissez ?"</div></div>
-        <div class="obj" style="margin-bottom:6px"><div class="oq">Fiche Google</div><div class="oa">"Parfait, et quand il clique dessus, il voit quoi de plus qu'une adresse et des avis ?"</div></div>
-        <div class="obj"><div class="oq">Assez de clients</div><div class="oa">"C'est parfait, ça veut dire que votre réputation est excellente. Je vous laisse mon numéro si un jour vous voulez structurer ça."</div></div>
+        <div class="step-title">Rebond (une seule relance)</div>
+        <div class="obj" style="margin-bottom:6px"><div class="oq">Bouche-à-oreille</div><div class="oa">"C'est la meilleure source, ça veut dire que vous travaillez bien. Mais quand quelqu'un vous est recommandé, il vous cherche sur Google avant d'appeler. Il trouve quoi ?"</div></div>
+        <div class="obj" style="margin-bottom:6px"><div class="oq">Facebook / Instagram</div><div class="oa">"Très bien. Et si quelqu'un tape [métier] [ville] sur Google, vous ressortez ?"</div></div>
+        <div class="obj" style="margin-bottom:6px"><div class="oq">Fiche Google</div><div class="oa">"Parfait. Et quand il clique, il voit quoi de plus qu'une adresse et des avis ? Vos chantiers, vos prestations ?"</div></div>
+        <div class="obj" style="margin-bottom:6px"><div class="oq">J'ai un site (vieux)</div><div class="oa">"Ah très bien, il date de quand ? … Vous l'avez regardé sur un téléphone récemment ?"</div></div>
+        <div class="obj"><div class="oq">Assez de clients</div><div class="oa">"Tant mieux. Vous choisissez vos chantiers, ou vous prenez tout ce qui vient ?" → s'il prend tout : étape 4. Sinon : remercier, laisser le numéro.</div></div>
       </div>
     </div>
 
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
-        <div class="step-title">L'offre en une phrase</div>
-        <div class="step-txt">"OK je me lance dans la création de sites web, et je cherche mes premières entreprises à prix réduit. De mon côté vous avez un metier visuel et j'adorerais vous proser une offre adaptée pour vous aider a résoudre ce probleme."</div>
-        <div class="step-pause">⏸ Pause : il réagit</div>
-        <div class="step-note">C'est un brouillon, on le peaufine ensemble.</div>
+        <div class="step-title">L'offre — concrète, avec le prix</div>
+        <div class="step-txt" style="margin-top:8px">"Je vous explique pourquoi je vous appelle : je lance mon activité et je cherche <b>3 entreprises du coin</b> pour qui je fais le site quasiment offert : <b>100 € de frais</b>, en échange d'un avis écrit si vous êtes content."</div>
+        <div class="step-txt" style="margin-top:8px">"Concrètement : une page avec vos chantiers en photo, vos prestations, vos avis, un bouton pour vous appeler direct, et que vous ressortiez quand on tape [métier] [ville]."</div>
+        <div class="step-pause">⏸ Silence. Laisse-le réagir.</div>
       </div>
     </div>
 
     <div class="step">
       <div class="step-num">5</div>
       <div class="step-body">
-        <div class="step-title">Rendez-vous</div>
-        <div class="step-txt">"Monsieur, je vous ai promis d'ête court. Est ce que ca serait une mauvaise idée qu'on prenne un RDV la semaine prochaine pour que je vous explique concretement comment ce site peut vous aider"</div>
-        <div class="step-note">Propose toujours deux créneaux précis, jamais "quand êtes-vous dispo ?".</div>
+        <div class="step-title">La petite demande (pas un RDV)</div>
+        <div class="step-txt" style="margin-top:8px">"Ce que je vous propose : je vous prépare <b>une maquette de votre page d'accueil, gratuitement</b>, je vous l'envoie par mail. Si ça vous plaît on en discute 10 minutes, sinon vous la jetez. C'est quoi le meilleur mail ?"</div>
+        <div class="step-note">Oui → noter le mail + caler le rappel : "Je vous l'envoie jeudi, je vous rappelle vendredi 10h ou 17h ?" (deux créneaux précis).</div>
+        <div class="step-note">Il hésite → "Ou au minimum je vous envoie l'<b>audit gratuit</b> de votre présence en ligne, 5 min de lecture."</div>
       </div>
     </div>
+
     <div class="sec-lbl" style="margin-top:4px">Objections</div>
-    <div class="obj"><div class="oq">💬 "C'est combien ?"</div><div class="oa">"Ça dépend de vos besoins — on fixe un RDV de 15 min et je vous fais une proposition adaptée ?"</div></div>
-    <div class="obj"><div class="oq">💬 "On n'a pas besoin"</div><div class="oa">"Pas de souci !" — Je peux vous demander pourquoi.</div></div>
-    <div class="obj"><div class="oq">💬 "Laissez votre numéro"</div><div class="oa">"Bien sûr mais je ne vous dérange pas plus je m'occupe de vous rappeler. Je peux noter votre numéro ?"</div></div>
-    <div class="obj"><div class="oq">💬 "J'ai déjà quelqu'un"</div><div class="oa">"Très bien !" — tu pars directement.</div></div>
-    <div class="obj"><div class="oq">💬 Personnel occupé</div><div class="oa">"Bonjour, je ne veux pas vous déranger — je peux laisser mon numéro à qui ? Je repasserai quand vous aurez 5 minutes."</div></div>
+    <div class="obj"><div class="oq">💬 "C'est combien ?"</div><div class="oa">"100 € de frais, c'est tout. C'est mon prix de lancement, en échange d'un témoignage. Le tarif normal c'est 800 €." → enchaîner sur la maquette. <b>Ne jamais esquiver le prix.</b></div></div>
+    <div class="obj"><div class="oq">💬 "On n'a pas besoin" (dès le début)</div><div class="oa">"Pas de souci. C'est parce que vous avez assez de travail, ou parce que le web vous a jamais rien rapporté ?" → rebond étape 3, ou : "Je vous envoie au moins l'audit gratuit ?"</div></div>
+    <div class="obj"><div class="oq">💬 "On n'a pas besoin" (après l'offre)</div><div class="oa">"Je comprends. Je vous fais quand même la maquette ? Ça vous engage à rien." → 2e non : remercier, raccrocher.</div></div>
+    <div class="obj"><div class="oq">💬 "C'est quoi le piège ?"</div><div class="oa">"Aucun : je démarre, j'ai besoin de sites en ligne et d'avis pour montrer mon travail. Après, le seul coût c'est le nom de domaine, environ 20 € par an, je vous le dis dès maintenant."</div></div>
+    <div class="obj"><div class="oq">💬 "J'ai déjà quelqu'un"</div><div class="oa">"Très bien ! Il s'occupe aussi de votre référencement Google ?" → si oui : remercier et partir.</div></div>
+    <div class="obj"><div class="oq">💬 "Envoyez-moi un mail"</div><div class="oa">"Avec plaisir, je vous envoie la maquette plutôt qu'une plaquette, c'est plus parlant. C'est quoi votre mail ? Je vous rappelle [jour] pour votre avis."</div></div>
+    <div class="obj"><div class="oq">💬 "Rappelez plus tard" / patron absent</div><div class="oa">"Bien sûr, c'est quoi le meilleur moment ?" → noter un <b>créneau précis</b>. Employé : "Je peux le joindre à quelle heure, en général ?"</div></div>
+    <div class="obj"><div class="oq">💬 "J'ai pas le temps de m'en occuper"</div><div class="oa">"C'est le principe : je m'occupe de tout. Vous, il faut juste 10 photos de chantiers et 15 minutes au téléphone."</div></div>
+    <div class="sec-lbl" style="margin-top:4px">Après l'appel</div>
+    <div class="obj"><div class="oa">Noter la <b>raison exacte</b> du refus · maquette envoyée sous 48 h · relancer au créneau prévu. Artisans : tester 8h-9h et 17h-18h30.</div></div>
   </div>
 </div>
 
@@ -314,8 +328,43 @@ const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 let prospects = [];
 let apiKey = '';
 let mfMode = 'all';
-const EM = {restaurant:'🍽',coiffeur:'✂️','garage automobile':'🚗',paysagiste:'🌿',plombier:'🔧',maçon:'🏗',couvreur:'🏠',peintre:'🎨',menuisier:'🪵','institut beauté':'💅',boulangerie:'🥐',pharmacie:'💊'};
-const activeChips = new Set(['restaurant','coiffeur','garage automobile','paysagiste']);
+const EM = {restaurant:'🍽',coiffeur:'✂️','garage automobile':'🚗',paysagiste:'🌿',plombier:'🔧',maçon:'🏗',couvreur:'🏠',peintre:'🎨',menuisier:'🪵','institut beauté':'💅',boulangerie:'🥐',pharmacie:'💊','électricien':'⚡'};
+const activeChips = new Set(['peintre','paysagiste','menuisier','couvreur']);
+
+// ---------- Scoring v2 ----------
+// Secteurs où le site rapporte le plus (clients qui comparent, chantiers chers, métier visuel)
+const PRIO = ['peintre','paysagiste','menuisier','couvreur','maçon','plombier','électricien'];
+// "Faux sites" : réseaux sociaux / annuaires = pas de vrai site
+const PSEUDO = /facebook\.com|instagram\.com|pagesjaunes|linktr\.ee|business\.site|google\.com|tiktok\.com/i;
+// Sites gratuits / constructeurs bas de gamme = site faible, prospect qui croit déjà au web
+const CHEAP = /wixsite\.com|jimdo|site123|webnode|e-monsite|wordpress\.com|blogspot|over-blog|godaddysites|sitew\./i;
+
+function siteType(p){
+  const w=(p.website||'').trim();
+  if(!w) return 'none';
+  if(PSEUDO.test(w)) return 'pseudo';
+  if(/^http:\/\//i.test(w)) return 'nohttps';
+  if(CHEAP.test(w)) return 'cheap';
+  return 'ok';
+}
+
+function scoreP(p){
+  const t=siteType(p);
+  let score=40, why=[];
+  if(t==='none'){score+=30;why.push('aucun site');}
+  else if(t==='pseudo'){score+=30;why.push('seulement réseaux/annuaire');}
+  else if(t==='nohttps'){score+=20;why.push('site non sécurisé (http)');}
+  else if(t==='cheap'){score+=20;why.push('site gratuit/amateur');}
+  else {why.push('site existant : vérifier âge + mobile');}
+  const r=p.reviews||0;
+  if(r<20){score+=15;why.push('peu d\'avis : jeune ou peu visible');}
+  else if(r<=100){score+=5;}
+  else if(r>300){score-=15;why.push('très établi : risque "pas besoin"');}
+  if(PRIO.includes(p.secteur)){score+=10;}
+  score=Math.max(5,Math.min(99,score));
+  const qualif=score>=70?'top':score>=50?'mid':'low';
+  return {...p,siteType:t,score,qualif,why:why.join(' · ')};
+}
 
 function init(){
   // Load API key from localStorage
@@ -323,7 +372,7 @@ function init(){
   if(saved){ apiKey=saved; showOk(); }
   // Load prospects
   const sp = localStorage.getItem('prospects_v5');
-  if(sp){ try{ prospects=JSON.parse(sp); renderResults(); updateRetour(); renderRoute(); }catch(e){} }
+  if(sp){ try{ prospects=JSON.parse(sp).map(scoreP); save(); renderResults(); updateRetour(); renderRoute(); }catch(e){} }
   // Chips
   document.querySelectorAll('#chips .chip').forEach(c=>{
     c.addEventListener('click',()=>{
@@ -404,22 +453,8 @@ async function doSearch(){
     }catch(e){console.log('Erreur:',e);}
   }
 
-  const scored=allResults.map(p=>{
-    let score=50;
-    if(!p.hasWebsite) score+=40;
-    else score-=25;
-    if(p.reviews<30) score+=10;
-    if(p.reviews>300) score-=10;
-    score=Math.max(5,Math.min(99,score));
-    const qualif=!p.hasWebsite&&score>=70?'top':score>=45?'mid':'low';
-    return {...p,score,qualif};
-  });
-
-  scored.sort((a,b)=>{
-    if(!a.hasWebsite&&b.hasWebsite)return -1;
-    if(a.hasWebsite&&!b.hasWebsite)return 1;
-    return b.score-a.score;
-  });
+  const scored=allResults.map(scoreP);
+  scored.sort((a,b)=>b.score-a.score);
 
 const blocked=JSON.parse(localStorage.getItem('blocked_ids')||'[]');
   for(const p of scored){
@@ -427,8 +462,8 @@ const blocked=JSON.parse(localStorage.getItem('blocked_ids')||'[]');
   }
   save();
   renderResults();renderRoute();
-  const noSite=scored.filter(p=>!p.hasWebsite).length;
-  toast(`✅ ${scored.length} trouvés · ${noSite} sans site`);
+  const nTop=scored.filter(p=>p.qualif==='top').length;
+  toast(`✅ ${scored.length} trouvés · ${nTop} cibles prioritaires`);
   btn.disabled=false;
 }
 
@@ -436,29 +471,30 @@ function getQI(p){
   if(p.rdv)return{cls:'cr',bdg:'br',lbl:'📅 RDV calé'};
   if(p.visited&&!p.refused)return{cls:'cv',bdg:'bv',lbl:'👣 Visité'};
   if(p.refused)return{cls:'cl',bdg:'bl',lbl:'❌ Refus'};
-  if(p.qualif==='top')return{cls:'ct',bdg:'bt',lbl:'✅ Sans site'};
-  if(p.qualif==='mid')return{cls:'cm',bdg:'bm',lbl:'⚠️ À vérifier'};
-  return{cls:'cl',bdg:'bl',lbl:'🌐 Site existant'};
+  if(p.qualif==='top')return{cls:'ct',bdg:'bt',lbl:'🎯 Prioritaire'};
+  if(p.qualif==='mid')return{cls:'cm',bdg:'bm',lbl:'⚠️ À creuser'};
+  return{cls:'cl',bdg:'bl',lbl:'💤 Peu probable'};
 }
 
 function renderResults(){
   const area=document.getElementById('results');
   if(!prospects.length){area.innerHTML='<div class="empty"><div class="ei">🎯</div>Configure ta clé API et lance la recherche</div>';return;}
-const noSite=prospects.filter(p=>!p.hasWebsite&&!p.archived);
-const withSite=prospects.filter(p=>p.hasWebsite&&!p.archived);
+  const act=prospects.filter(p=>!p.archived).sort((a,b)=>(b.score||0)-(a.score||0));
   area.innerHTML='';
-  if(noSite.length){
+  const groups=[
+    ['top','🎯 Cibles prioritaires'],
+    ['mid','⚠️ À creuser (regarde le site avant d\'appeler)'],
+    ['low','💤 Peu probables'],
+  ];
+  groups.forEach(([q,title],gi)=>{
+    const list=act.filter(p=>p.qualif===q);
+    if(!list.length)return;
     const l=document.createElement('div');l.className='p-hdr';
-    l.textContent=`🎯 ${noSite.length} entreprises SANS site — tes cibles`;
+    if(gi)l.style.marginTop='8px';
+    l.textContent=`${title} — ${list.length}`;
     area.appendChild(l);
-    noSite.forEach(p=>area.appendChild(makeCard(p)));
-  }
-  if(withSite.length){
-    const l=document.createElement('div');l.className='p-hdr';l.style.marginTop='8px';
-    l.textContent=`🌐 ${withSite.length} avec site (à éviter)`;
-    area.appendChild(l);
-    withSite.slice(0,3).forEach(p=>area.appendChild(makeCard(p)));
-  }
+    (q==='low'?list.slice(0,5):list).forEach(p=>area.appendChild(makeCard(p)));
+  });
 }
 
 function makeCard(p){
@@ -466,7 +502,7 @@ function makeCard(p){
   const em=EM[p.secteur]||'🏢';
   const sc=p.score||50;
   const scC=sc>=70?'var(--green)':sc>=45?'var(--amber)':'var(--red)';
-  const siteInfo=p.hasWebsite?`🌐 ${p.website.replace(/https?:\/\//,'').split('/')[0]}`:'❌ Aucun site web';
+  const siteInfo=p.hasWebsite?`🌐 <a href="${p.website}" target="_blank" rel="noopener" style="color:inherit">${p.website.replace(/https?:\/\//,'').split('/')[0]}</a>`:'❌ Aucun site web';
   const div=document.createElement('div');
   div.className='card '+qi.cls;
   div.innerHTML=`
@@ -479,6 +515,7 @@ function makeCard(p){
       <div class="c-bdg ${qi.bdg}">${qi.lbl}</div>
     </div>
     <div class="c-why">${siteInfo}${p.tel?' · 📞 '+p.tel:''}</div>
+    ${p.why?`<div class="c-meta">💡 ${p.why}</div>`:''}
     ${p.adresse?`<div class="c-meta">📍 ${p.adresse}</div>`:''}
     <div class="c-score">
       <div class="sb"><div class="sf" style="width:${sc}%;background:${scC}"></div></div>
@@ -534,7 +571,7 @@ function setMf(f,el){
 function renderRoute(){
   const wrap=document.getElementById('stops');
   let targets=prospects.filter(p=>p.qualif!=='low');
-  if(mfMode==='top')targets=targets.filter(p=>!p.hasWebsite);
+  if(mfMode==='top')targets=targets.filter(p=>p.qualif==='top');
   if(mfMode==='rem')targets=targets.filter(p=>!p.visited&&!p.rdv&&!p.refused);
   targets.sort((a,b)=>{
     if(a.visited&&!b.visited)return 1;
