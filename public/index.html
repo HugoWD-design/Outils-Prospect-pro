@@ -258,9 +258,9 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
       <div class="step-num">1</div>
       <div class="step-body">
         <div class="step-title">Accroche + permission</div>
-        <div class="step-txt" style="margin-top:8px">"Bonjour, c'est bien [entreprise] ? … Moi c'est Hugo, de Novae Studio, à Nantes."</div>
+        <div class="step-txt" style="margin-top:8px">"Bonjour, c'est bien [entreprise] ? … Bonjour, Hugo à l'appareil."</div>
         <div class="step-pause">⏸ Il répond</div>
-        <div class="step-txt" style="margin-top:8px">"Je vous cache rien, c'est un appel de prospection. Vous m'accordez 30 secondes, et si ça vous parle pas je vous laisse tranquille ?"</div>
+        <div class="step-txt" style="margin-top:8px">"Je vous cache rien, c'est un appel de prospection. Vous m'accordez 30 secondes ?"</div>
         <div class="step-pause">⏸ Il répond</div>
       </div>
     </div>
@@ -268,8 +268,8 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <div class="step-title">Observation + découverte</div>
-        <div class="step-txt" style="margin-top:8px">"J'ai regardé votre entreprise avant de vous appeler : [observation, ex. vous avez de très bons avis sur Google mais pas de site]. Aujourd'hui, vos nouveaux clients, ils vous trouvent comment ?"</div>
+        <div class="step-title">Observation + question</div>
+        <div class="step-txt" style="margin-top:8px">"J'ai regardé votre entreprise avant de vous appeler : [observation, ex. vous avez de très bons avis sur Google mais pas de site]. C'est un choix de votre part, ou c'est quelque chose que vous n'avez pas encore eu le temps de faire ?"</div>
         <div class="step-pause">⏸ Tu écoutes, tu ne coupes pas</div>
       </div>
     </div>
@@ -278,11 +278,12 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
       <div class="step-num">3</div>
       <div class="step-body">
         <div class="step-title">Rebond (une seule relance)</div>
-        <div class="obj" style="margin-bottom:6px"><div class="oq">Bouche-à-oreille</div><div class="oa">"C'est la meilleure source, ça veut dire que vous travaillez bien. Mais quand quelqu'un vous est recommandé, il vous cherche sur Google avant d'appeler. Il trouve quoi ?"</div></div>
-        <div class="obj" style="margin-bottom:6px"><div class="oq">Facebook / Instagram</div><div class="oa">"Très bien. Et si quelqu'un tape [métier] [ville] sur Google, vous ressortez ?"</div></div>
-        <div class="obj" style="margin-bottom:6px"><div class="oq">Fiche Google</div><div class="oa">"Parfait. Et quand il clique, il voit quoi de plus qu'une adresse et des avis ? Vos chantiers, vos prestations ?"</div></div>
-        <div class="obj" style="margin-bottom:6px"><div class="oq">J'ai un site (vieux)</div><div class="oa">"Ah très bien, il date de quand ? … Vous l'avez regardé sur un téléphone récemment ?"</div></div>
-        <div class="obj"><div class="oq">Assez de clients</div><div class="oa">"Tant mieux. Vous choisissez vos chantiers, ou vous prenez tout ce qui vient ?" → s'il prend tout : étape 4. Sinon : remercier, laisser le numéro.</div></div>
+        <div class="obj" style="margin-bottom:6px"><div class="oq">« Pas eu le temps » / « pas pensé »</div><div class="oa">"C'est souvent le cas, quand on est sur les chantiers toute la journée." → passer au 4.</div></div>
+        <div class="obj" style="margin-bottom:6px"><div class="oq">« C'est voulu, le bouche-à-oreille suffit »</div><div class="oa">"C'est la meilleure source, ça veut dire que vous travaillez bien. Mais quand quelqu'un vous est recommandé, il vous cherche sur Google avant d'appeler. Il trouve quoi ?"</div></div>
+        <div class="obj" style="margin-bottom:6px"><div class="oq">« J'ai Facebook / Instagram »</div><div class="oa">"Très bien. Et si quelqu'un tape [métier] [ville] sur Google, vous ressortez ?"</div></div>
+        <div class="obj" style="margin-bottom:6px"><div class="oq">« Ma fiche Google suffit »</div><div class="oa">"Et quand il clique, il voit quoi de plus qu'une adresse et des avis ? Vos chantiers, vos prestations ?"</div></div>
+        <div class="obj" style="margin-bottom:6px"><div class="oq">« J'ai un site »</div><div class="oa">"Ah très bien, il date de quand ? … Vous l'avez regardé sur un téléphone récemment ?"</div></div>
+        <div class="obj"><div class="oq">« J'ai assez de clients »</div><div class="oa">"Tant mieux. Vous choisissez vos chantiers, ou vous prenez tout ce qui vient ?" → s'il prend tout : passer au 4. Sinon : remercier, laisser le numéro.</div></div>
       </div>
     </div>
 
@@ -290,7 +291,9 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
       <div class="step-num">4</div>
       <div class="step-body">
         <div class="step-title">L'offre — concrète, avec le prix</div>
-        <div class="step-txt" style="margin-top:8px">"Je vous explique pourquoi je vous appelle : je lance mon activité et je cherche <b>3 entreprises du coin</b> pour qui je fais le site quasiment offert : <b>100 € de frais</b>, en échange d'un avis écrit si vous êtes content."</div>
+        <div class="step-txt" style="margin-top:8px">"Justement, c'est pour ça que je vous appelle."</div>
+        <div class="step-note">Puis, selon le prospect :<br>• <b>Il a un site</b> → "J'ai vu un vrai potentiel d'amélioration sur votre site, notamment [observation]."<br>• <b>Il n'a pas de site</b> → "Vous avez tout pour avoir un bon site : de bons avis, des réalisations à montrer. Il vous manque juste la vitrine."</div>
+        <div class="step-txt" style="margin-top:8px">"Je lance mon activité et je cherche <b>3 entreprises du coin</b> pour qui je fais le site quasiment offert : <b>100 € de frais</b>, en échange d'un avis écrit si vous êtes content."</div>
         <div class="step-txt" style="margin-top:8px">"Concrètement : une page avec vos chantiers en photo, vos prestations, vos avis, un bouton pour vous appeler direct, et que vous ressortiez quand on tape [métier] [ville]."</div>
         <div class="step-pause">⏸ Silence. Laisse-le réagir.</div>
       </div>
