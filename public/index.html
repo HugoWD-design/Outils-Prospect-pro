@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ProspectPro — Rezé</title>
+<title>ProspectPro</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -72,23 +72,49 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
 .av{background:var(--blue-d);color:var(--blue);border-color:var(--blue);}
 .ar{background:var(--pink-d);color:var(--pink);border-color:var(--pink);}
 .ano{background:var(--red-d);color:var(--red);border-color:var(--red);}
-.map-pg{padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
 .pg-title{font-size:16px;font-weight:700;}
 .pg-sub{font-size:12px;color:var(--txt2);margin-top:2px;}
 .mf-row{display:flex;gap:6px;}
 .mf{flex:1;background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);padding:8px 4px;font-size:11px;color:var(--txt2);cursor:pointer;text-align:center;font-family:'Inter',sans-serif;transition:all .15s;}
 .mf.on{background:var(--blue-d);color:var(--blue);border-color:var(--blue);}
-.route-box{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r-lg);padding:13px;}
-.rb-title{font-size:11px;color:var(--txt2);font-weight:500;margin-bottom:10px;}
-.stops{display:flex;flex-direction:column;gap:6px;}
-.stop{display:flex;align-items:center;gap:9px;background:var(--ink3);border-radius:var(--r);padding:8px 10px;border:1px solid var(--line);}
-.sn{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sn.done{background:var(--green);}
-.si{flex:1;min-width:0;}
-.s-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.s-time{font-size:10px;color:var(--txt2);}
-.s-cp{font-size:11px;padding:4px 7px;border-radius:5px;border:1px solid var(--line);background:var(--ink2);color:var(--txt2);cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;}
-.open-btn{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:13px;font-weight:600;cursor:pointer;width:100%;font-family:'Inter',sans-serif;}
+/* --- Accès --- */
+.lock{position:fixed;inset:0;background:var(--ink);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;}
+.lock.on{display:flex;}
+.lock-box{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px;}
+.sync{font-size:10px;color:var(--txt2);text-align:center;padding:4px 0 0;}
+.sync.err{color:var(--red);}
+/* --- Suivi --- */
+.sv-pg{padding:14px 16px 24px;display:flex;flex-direction:column;gap:10px;}
+.sv-head{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.btn{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:9px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;}
+.btn.ghost{background:var(--ink3);color:var(--txt);border:1px solid var(--line);}
+.inp{background:var(--ink3);border:1px solid var(--line);border-radius:var(--r);padding:9px 11px;color:var(--txt);font-size:14px;width:100%;font-family:'Inter',sans-serif;}
+.inp:focus{outline:none;border-color:var(--blue);}
+.add-box{background:var(--ink2);border:1px solid var(--blue);border-radius:var(--r-lg);padding:12px;display:none;flex-direction:column;gap:8px;}
+.add-box.on{display:flex;}
+.grp{display:flex;flex-direction:column;gap:6px;}
+.grp>summary{font-size:11px;color:var(--txt2);font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;padding:6px 0;list-style:none;}
+.grp>summary::-webkit-details-marker{display:none;}
+.grp>summary::before{content:'▸ ';}
+.grp[open]>summary::before{content:'▾ ';}
+.today{border:1px solid var(--amber);border-radius:var(--r-lg);padding:10px;background:var(--amber-d);}
+.today>summary{color:var(--amber);}
+.sv{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r-lg);padding:11px 12px;border-left:3px solid var(--line2);}
+.sv-top{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.sv-inf{flex:1;min-width:0;}
+.sv-name{font-size:14px;font-weight:600;line-height:1.3;}
+.sv-sub{font-size:11px;color:var(--txt2);margin-top:2px;}
+.sv-sub.late{color:var(--red);font-weight:600;}
+.tel-btn{background:var(--green);color:#000;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;flex-shrink:0;}
+.sv-det{display:none;flex-direction:column;gap:9px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}
+.sv.open .sv-det{display:flex;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.lbl{font-size:10px;color:var(--txt2);margin-bottom:3px;}
+.notes{display:flex;flex-direction:column;gap:5px;}
+.nt-i{background:var(--ink3);border-radius:var(--r);padding:7px 9px;font-size:12px;line-height:1.5;white-space:pre-wrap;}
+.nt-d{font-size:10px;color:var(--txt2);margin-bottom:2px;}
+.reasons{display:flex;flex-direction:column;gap:5px;}
+.reason{display:flex;justify-content:space-between;background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);padding:8px 11px;font-size:12px;}
 .ret-pg{padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
 .kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
 .kpi{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);padding:10px;text-align:center;}
@@ -130,14 +156,25 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
 </style>
 </head>
 <body>
-<div class="nav">
-  <div class="nt on" onclick="go('search',this)">🔍 Recherche</div>
-  <div class="nt" onclick="go('map',this)">🗺 Séance</div>
-  <div class="nt" onclick="go('retour',this)">📊 Retour</div>
-  <div class="nt" onclick="go('pitch',this)">💬 Pitch</div>
+<div class="lock" id="lock">
+  <div class="lock-box">
+    <div class="pg-title">🔒 ProspectPro</div>
+    <div class="pg-sub">Entre ton code d'accès (une seule fois sur cet appareil).</div>
+    <input class="inp" id="lock-inp" type="password" placeholder="Code d'accès" onkeydown="if(event.key==='Enter')unlock()">
+    <button class="btn" onclick="unlock()">Entrer</button>
+    <div class="sync err" id="lock-err"></div>
+  </div>
 </div>
 
-<div class="pg on" id="pg-search">
+<div class="nav">
+  <div class="nt" data-pg="search" onclick="go('search',this)">🔍 Recherche</div>
+  <div class="nt" data-pg="suivi" onclick="go('suivi',this)">📋 Suivi</div>
+  <div class="nt" data-pg="retour" onclick="go('retour',this)">📊 Retour</div>
+  <div class="nt" data-pg="pitch" onclick="go('pitch',this)">💬 Pitch</div>
+</div>
+<div class="sync" id="sync"></div>
+
+<div class="pg" id="pg-search">
   <div class="api-banner" id="api-banner">
     <div class="api-title">🔑 Entre ta clé API Google Places</div>
     <div class="api-sub">Stockée uniquement sur ton appareil via localStorage.</div>
@@ -197,45 +234,46 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
   </div>
 </div>
 
-<div class="pg" id="pg-map">
-  <div class="map-pg">
-    <div><div class="pg-title">Plan de séance</div><div class="pg-sub">Ordre de visite optimisé</div></div>
-    <div class="mf-row">
-      <div class="mf on" onclick="setMf('all',this)">Tous</div>
-      <div class="mf" onclick="setMf('top',this)">✅ Sans site</div>
-      <div class="mf" onclick="setMf('rem',this)">À faire</div>
+<div class="pg" id="pg-suivi">
+  <div class="sv-pg">
+    <div class="sv-head">
+      <div><div class="pg-title">Suivi prospects</div><div class="pg-sub" id="sv-count"></div></div>
+      <button class="btn" onclick="toggleAdd()">➕ Ajouter</button>
     </div>
-    <div class="route-box">
-      <div class="rb-title">Itinéraire de ta séance</div>
-      <div class="stops" id="stops"><div class="empty" style="padding:14px;font-size:12px"><div class="ei">🗺</div>Lance une recherche d'abord</div></div>
+    <div class="add-box" id="add-box">
+      <input class="inp" id="add-nom" placeholder="Nom de l'entreprise *">
+      <input class="inp" id="add-tel" type="tel" placeholder="Téléphone">
+      <input class="inp" id="add-sect" placeholder="Métier (ex. peintre)">
+      <select class="inp" id="add-st"></select>
+      <textarea class="inp" id="add-note" rows="2" placeholder="Note (facultatif)"></textarea>
+      <button class="btn" onclick="addManual()">Ajouter au suivi</button>
     </div>
-    <button class="open-btn" onclick="openFirst()">📍 Ouvrir 1er arrêt dans Maps</button>
+    <input class="inp" id="sv-q" placeholder="🔎 Chercher un nom…" oninput="renderSuivi()">
+    <div id="sv-list"></div>
   </div>
 </div>
 
 <div class="pg" id="pg-retour">
   <div class="ret-pg">
-    <div><div class="pg-title">Retour de séance</div><div class="pg-sub">Stats et analyse IA</div></div>
-    <div class="kgrid">
-      <div class="kpi"><div class="kv" id="k-t" style="color:var(--blue)">0</div><div class="kl">Prospects</div></div>
-      <div class="kpi"><div class="kv" id="k-v" style="color:var(--green)">0</div><div class="kl">Visités</div></div>
-      <div class="kpi"><div class="kv" id="k-r" style="color:var(--pink)">0</div><div class="kl">RDV calés</div></div>
+    <div><div class="pg-title">Retour de séance</div><div class="pg-sub">Tes chiffres, à comparer aux objectifs de la méthode</div></div>
+    <div class="mf-row">
+      <div class="mf on" data-per="day" onclick="setPer('day',this)">Aujourd'hui</div>
+      <div class="mf" data-per="week" onclick="setPer('week',this)">7 jours</div>
+      <div class="mf" data-per="all" onclick="setPer('all',this)">Tout</div>
     </div>
     <div class="kgrid">
-      <div class="kpi"><div class="kv" id="k-no" style="color:var(--red)">0</div><div class="kl">Refus</div></div>
-      <div class="kpi"><div class="kv" id="k-hot" style="color:var(--amber)">0</div><div class="kl">🔥 Chauds</div></div>
-<div class="kpi"><div class="kv" id="k-called" style="color:var(--green)">0</div><div class="kl">Appelés</div></div>  
-      <div class="kpi"><div class="kv" id="k-rt" style="color:var(--amber)">0%</div><div class="kl">Taux RDV</div></div>
-      <div class="kpi"><div class="kv" id="k-sc" style="color:var(--green)">—</div><div class="kl">Score</div></div>
+      <div class="kpi"><div class="kv" id="k-call" style="color:var(--blue)">0</div><div class="kl">Appels</div></div>
+      <div class="kpi"><div class="kv" id="k-dec" style="color:var(--green)">0</div><div class="kl">Décrochés</div></div>
+      <div class="kpi"><div class="kv" id="k-maq" style="color:var(--amber)">0</div><div class="kl">Petits « oui »</div></div>
     </div>
-    <div class="sec-lbl">Entreprises visitées</div>
-    <div class="vlist" id="vlist"><div class="empty" style="padding:10px;font-size:12px">Aucune visite encore</div></div>
-    <div class="note-box">
-      <div class="note-title">📝 Notes de séance</div>
-      <textarea class="note-ta" id="note-ta" placeholder="Ex: Le garage Dupont très intéressé mais patron absent..."></textarea>
-      <button class="ana-btn" onclick="analyse()">🤖 Analyser avec l'IA Claude</button>
-      <div class="ana-res" id="ana-res"></div>
+    <div class="kgrid">
+      <div class="kpi"><div class="kv" id="k-rdv" style="color:var(--pink)">0</div><div class="kl">RDV</div></div>
+      <div class="kpi"><div class="kv" id="k-sig" style="color:var(--green)">0</div><div class="kl">Signés</div></div>
+      <div class="kpi"><div class="kv" id="k-lost" style="color:var(--red)">0</div><div class="kl">Perdus</div></div>
     </div>
+    <div class="pg-sub">Repère (20 appels) : ~8-10 décrochés · ~2-3 petits « oui » · 1 RDV toutes les 2-3 séances.</div>
+    <div class="sec-lbl">Raisons des refus</div>
+    <div class="reasons" id="reasons"></div>
   </div>
 </div>
 
@@ -327,12 +365,46 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
 
 <script>
 const API_URL = '/api/search';
-const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
+const DATA_URL = '/api/data';
 let prospects = [];
+let blocked = [];
 let apiKey = '';
-let mfMode = 'all';
+let accessCode = '';
+let period = 'day';
+const drafts = {};
+const closedGroups = new Set(['signe','perdu']);
 const EM = {restaurant:'🍽',coiffeur:'✂️','garage automobile':'🚗',paysagiste:'🌿',plombier:'🔧',maçon:'🏗',couvreur:'🏠',peintre:'🎨',menuisier:'🪵','institut beauté':'💅',boulangerie:'🥐',pharmacie:'💊','électricien':'⚡'};
 const activeChips = new Set(['peintre','paysagiste','menuisier','couvreur']);
+
+// ---------- Étapes du suivi (calquées sur la Méthode de prospection) ----------
+const ST = [
+  ['appeler','📞 À appeler'],
+  ['nrp','📵 Pas décroché'],
+  ['rappel','⏰ Rappel prévu'],
+  ['maquette','🎨 Maquette à faire'],
+  ['envoyee','📨 Maquette envoyée'],
+  ['rdv','📅 RDV'],
+  ['bdc','📝 BDC envoyé'],
+  ['signe','✅ Signé'],
+  ['perdu','❌ Perdu'],
+];
+const STL = Object.fromEntries(ST);
+const ST_COL = {appeler:'var(--blue)',nrp:'var(--line2)',rappel:'var(--amber)',maquette:'var(--amber)',envoyee:'var(--blue)',rdv:'var(--pink)',bdc:'var(--pink)',signe:'var(--green)',perdu:'var(--red)'};
+const PRE_CALL = ['appeler','nrp','rappel']; // étapes où le prochain geste est un appel
+const DONE = ['signe','perdu'];
+const REASONS = ['Pas besoin','A déjà un site','Bouche-à-oreille suffit','Pas le temps','Trop cher','Pas intéressé','Faux numéro / fermé'];
+
+// ---------- Utilitaires ----------
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function normTel(t){const d=(t||'').replace(/\D/g,'');return d.length>=9?d.slice(-9):'';}
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v===null?d:v;}catch(e){return d;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
+function byId(id){return prospects.find(x=>x.id===id);}
+function touch(p){p.u=Date.now();}
+function fmt(d){return d.toLocaleString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}
+function endOfToday(){const d=new Date();d.setHours(23,59,59,999);return d;}
+function newSuivi(st){return {statut:st,ajoute:Date.now(),tentatives:0,rappel:'',mail:'',raison:'',notes:[],hist:[]};}
 
 // ---------- Scoring v2 ----------
 // Secteurs où le site rapporte le plus (clients qui comparent, chantiers chers, métier visuel)
@@ -368,15 +440,108 @@ function scoreP(p){
   const qualif=score>=70?'top':score>=50?'mid':'low';
   return {...p,siteType:t,score,qualif,why:why.join(' · ')};
 }
+function hydrate(list){return (list||[]).map(p=>p.nom?scoreP(p):p);}
 
+// ---------- Synchronisation (PC <-> téléphone) ----------
+let pushTimer=null, editSeq=0, retryTimer=null;
+
+function mergeData(a,b){
+  const map=new Map();
+  for(const p of a?.prospects||[]) map.set(p.id,p);
+  for(const p of b?.prospects||[]){const o=map.get(p.id);if(!o||(p.u||0)>(o.u||0))map.set(p.id,p);}
+  return {prospects:[...map.values()],blocked:[...new Set([...(a?.blocked||[]),...(b?.blocked||[])])]};
+}
+// Version allégée envoyée au serveur (les scores sont recalculés à l'affichage)
+function slim(p){
+  if(p.archived&&!p.suivi) return {id:p.id,archived:true,u:p.u||0};
+  const {score,qualif,why,siteType,...r}=p; return r;
+}
+function setSync(msg,err){const s=document.getElementById('sync');s.textContent=msg;s.className='sync'+(err?' err':'');}
+function cache(){lsSet('pp_cache',JSON.stringify({prospects:prospects.map(slim),blocked}));}
+
+async function api(method,body){
+  const r=await fetch(DATA_URL,{method,headers:{'Content-Type':'application/json','x-access-code':accessCode},body:body?JSON.stringify(body):undefined});
+  const j=await r.json().catch(()=>({}));
+  if(r.status===401){const e=new Error('code');e.code=401;throw e;}
+  if(!r.ok) throw new Error(j.error||('HTTP '+r.status));
+  return j;
+}
+
+function save(){
+  cache(); lsSet('pp_dirty','1'); editSeq++;
+  clearTimeout(pushTimer); pushTimer=setTimeout(push,700);
+}
+
+async function push(){
+  if(!accessCode) return;
+  clearTimeout(retryTimer);
+  const seq=editSeq;
+  try{
+    setSync('⏳ Enregistrement…');
+    const res=await api('PUT',{prospects:prospects.map(slim),blocked});
+    const m=mergeData(res,{prospects,blocked});
+    prospects=hydrate(m.prospects); blocked=m.blocked; cache();
+    if(seq===editSeq) lsDel('pp_dirty');
+    setSync('✓ Synchronisé');
+  }catch(e){
+    if(e.code===401) return logout('Code incorrect');
+    setSync('⚠️ Pas de connexion : modifs gardées sur cet appareil, nouvel essai dans 20 s',true);
+    retryTimer=setTimeout(push,20000);
+  }
+}
+
+async function pull(){
+  if(!accessCode) return;
+  try{
+    setSync('⏳ Synchronisation…');
+    const remote=await api('GET');
+    let local={prospects,blocked};
+    const old=lsGet('prospects_v5',null); // données de l'ancienne version, à importer une fois
+    if(old){ try{ local=mergeData(local,migrate(JSON.parse(old),JSON.parse(lsGet('blocked_ids','[]')))); }catch(e){} }
+    const m=mergeData(remote,local);
+    prospects=hydrate(m.prospects); blocked=m.blocked; cache();
+    renderAll();
+    if(old){ lsSet('prospects_v5_backup',old); lsDel('prospects_v5'); lsDel('blocked_ids'); lsSet('pp_dirty','1'); }
+    if(lsGet('pp_dirty',null)) await push(); else setSync('✓ Synchronisé');
+  }catch(e){
+    if(e.code===401) return logout('Code incorrect');
+    setSync('⚠️ Hors ligne : affichage des dernières données de cet appareil',true);
+  }
+}
+
+// Ancienne version : drapeaux appelé / chaud / RDV / refus -> fiche de suivi
+function migrate(arr,bl){
+  const now=Date.now();
+  return {blocked:bl||[],prospects:(arr||[]).map(p=>{
+    const q={...p}; let st=null;
+    if(p.rdv) st='rdv'; else if(p.refused) st='perdu'; else if(p.hot) st='rappel'; else if(p.called||p.visited) st='nrp';
+    const flags=[p.called&&'appelé',p.hot&&'chaud',p.rdv&&'RDV',p.refused&&'refus',p.visited&&'visité'].filter(Boolean).join(', ');
+    ['called','hot','rdv','refused','visited'].forEach(f=>delete q[f]);
+    if(st){ q.suivi=newSuivi(st); q.suivi.ajoute=p.createdAt||now; if(st==='perdu')q.suivi.raison='Non renseignée';
+      q.suivi.notes.push({t:now,txt:`Importé de l'ancienne version (${flags}) : étape à vérifier.`}); }
+    q.u=now; return q;
+  })};
+}
+
+// ---------- Accès ----------
+function unlock(){
+  const v=document.getElementById('lock-inp').value.trim(); if(!v) return;
+  accessCode=v; lsSet('pp_code',v);
+  document.getElementById('lock').classList.remove('on');
+  document.getElementById('lock-err').textContent='';
+  pull();
+}
+function logout(msg){
+  accessCode=''; lsDel('pp_code');
+  document.getElementById('lock').classList.add('on');
+  document.getElementById('lock-err').textContent=msg||'';
+}
+
+// ---------- Init / navigation ----------
 function init(){
-  // Load API key from localStorage
-  const saved = localStorage.getItem('gapi_key');
+  const saved=lsGet('gapi_key','');
   if(saved){ apiKey=saved; showOk(); }
-  // Load prospects
-  const sp = localStorage.getItem('prospects_v5');
-  if(sp){ try{ prospects=JSON.parse(sp).map(scoreP); save(); renderResults(); updateRetour(); renderRoute(); }catch(e){} }
-  // Chips
+  try{ const c=JSON.parse(lsGet('pp_cache','null')); if(c){ prospects=hydrate(c.prospects); blocked=c.blocked||[]; } }catch(e){}
   document.querySelectorAll('#chips .chip').forEach(c=>{
     c.addEventListener('click',()=>{
       const v=c.dataset.v;
@@ -384,18 +549,29 @@ function init(){
       else{activeChips.add(v);c.classList.add('on');}
     });
   });
+  document.getElementById('add-st').innerHTML=ST.filter(([k])=>!DONE.includes(k)).map(([k,l])=>`<option value="${k}">${l}</option>`).join('');
+  const dl=document.createElement('datalist'); dl.id='reasons-dl';
+  dl.innerHTML=REASONS.map(r=>`<option value="${esc(r)}">`).join(''); document.body.appendChild(dl);
+  const tab=lsGet('pp_tab',window.innerWidth<700?'suivi':'search');
+  go(tab,document.querySelector(`.nt[data-pg="${tab}"]`)||document.querySelector('.nt'));
+  renderAll();
+  accessCode=lsGet('pp_code','');
+  if(!accessCode) document.getElementById('lock').classList.add('on'); else pull();
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') pull(); });
 }
 
-function save(){ localStorage.setItem('prospects_v5',JSON.stringify(prospects)); }
-
 function go(id,el){
+  if(!document.getElementById('pg-'+id)) id='search';
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nt').forEach(t=>t.classList.remove('on'));
   document.getElementById('pg-'+id).classList.add('on');
-  el.classList.add('on');
-  if(id==='retour') updateRetour();
-  if(id==='map') renderRoute();
+  if(el) el.classList.add('on');
+  lsSet('pp_tab',id);
+  if(id==='retour') renderRetour();
+  if(id==='suivi') renderSuivi();
 }
+
+function renderAll(){ renderResults(); renderSuivi(); renderRetour(); }
 
 function toast(msg){
   const t=document.getElementById('toast');
@@ -407,7 +583,7 @@ function saveKey(){
   const v=document.getElementById('api-inp').value.trim();
   if(!v){toast('Entre ta clé API');return;}
   apiKey=v;
-  localStorage.setItem('gapi_key',v);
+  lsSet('gapi_key',v);
   showOk();
   toast('✅ Clé sauvegardée !');
 }
@@ -423,6 +599,9 @@ function editKey(){
   document.getElementById('api-inp').value='';
   document.getElementById('api-inp').focus();
 }
+
+// ---------- Recherche ----------
+function suiviTels(){ return new Set(prospects.filter(p=>p.suivi).map(p=>normTel(p.tel)).filter(Boolean)); }
 
 async function doSearch(){
   if(!apiKey){toast('Configure ta clé API d\'abord');return;}
@@ -446,12 +625,8 @@ async function doSearch(){
         continue;
       }
       const data=await resp.json();
-      const places=(data.results||[]).map(p=>({
-        ...p,secteur,
-        visited:false,rdv:false,refused:false,
-        createdAt:Date.now(),
-        id:p.id||('p_'+Date.now()+'_'+Math.random())
-      }));
+      const now=Date.now();
+      const places=(data.results||[]).map(p=>({...p,secteur,createdAt:now,u:now,id:p.id||('p_'+now+'_'+Math.random())}));
       allResults=[...allResults,...places];
     }catch(e){console.log('Erreur:',e);}
   }
@@ -459,21 +634,22 @@ async function doSearch(){
   const scored=allResults.map(scoreP);
   scored.sort((a,b)=>b.score-a.score);
 
-const blocked=JSON.parse(localStorage.getItem('blocked_ids')||'[]');
+  // Ne jamais reproposer : déjà connu, bloqué, ou même numéro qu'un prospect du suivi
+  const tels=suiviTels();
+  let known=0,added=0;
   for(const p of scored){
-    if(!prospects.find(x=>x.id===p.id)&&!blocked.includes(p.id)) prospects.unshift(p);
+    const ex=byId(p.id);
+    if(blocked.includes(p.id)||(ex&&(ex.suivi||ex.archived))||tels.has(normTel(p.tel))){known++;continue;}
+    if(!ex){prospects.unshift(p);added++;}
   }
   save();
-  renderResults();renderRoute();
+  renderResults();
   const nTop=scored.filter(p=>p.qualif==='top').length;
-  toast(`✅ ${scored.length} trouvés · ${nTop} cibles prioritaires`);
+  toast(`✅ ${scored.length} trouvés · ${nTop} prioritaires${known?` · ${known} déjà traités masqués`:''}`);
   btn.disabled=false;
 }
 
 function getQI(p){
-  if(p.rdv)return{cls:'cr',bdg:'br',lbl:'📅 RDV calé'};
-  if(p.visited&&!p.refused)return{cls:'cv',bdg:'bv',lbl:'👣 Visité'};
-  if(p.refused)return{cls:'cl',bdg:'bl',lbl:'❌ Refus'};
   if(p.qualif==='top')return{cls:'ct',bdg:'bt',lbl:'🎯 Prioritaire'};
   if(p.qualif==='mid')return{cls:'cm',bdg:'bm',lbl:'⚠️ À creuser'};
   return{cls:'cl',bdg:'bl',lbl:'💤 Peu probable'};
@@ -481,8 +657,8 @@ function getQI(p){
 
 function renderResults(){
   const area=document.getElementById('results');
-  if(!prospects.length){area.innerHTML='<div class="empty"><div class="ei">🎯</div>Configure ta clé API et lance la recherche</div>';return;}
-  const act=prospects.filter(p=>!p.archived).sort((a,b)=>(b.score||0)-(a.score||0));
+  const act=prospects.filter(p=>p.nom&&!p.archived&&!p.suivi).sort((a,b)=>(b.score||0)-(a.score||0));
+  if(!act.length){area.innerHTML='<div class="empty"><div class="ei">🎯</div>'+(apiKey?'Lance une recherche':'Configure ta clé API et lance la recherche')+'</div>';return;}
   area.innerHTML='';
   const groups=[
     ['top','🎯 Cibles prioritaires'],
@@ -505,174 +681,242 @@ function makeCard(p){
   const em=EM[p.secteur]||'🏢';
   const sc=p.score||50;
   const scC=sc>=70?'var(--green)':sc>=45?'var(--amber)':'var(--red)';
-  const siteInfo=p.hasWebsite?`🌐 <a href="${p.website}" target="_blank" rel="noopener" style="color:inherit">${p.website.replace(/https?:\/\//,'').split('/')[0]}</a>`:'❌ Aucun site web';
+  const siteInfo=p.hasWebsite?`🌐 <a href="${esc(p.website)}" target="_blank" rel="noopener" style="color:inherit">${esc(p.website.replace(/https?:\/\//,'').split('/')[0])}</a>`:'❌ Aucun site web';
   const div=document.createElement('div');
   div.className='card '+qi.cls;
   div.innerHTML=`
     <div class="c-top">
       <div class="c-em">${em}</div>
       <div class="c-inf">
-        <div class="c-name">${p.nom}</div>
-        <div class="c-type">${p.secteur}${p.rating?` · ⭐${p.rating} (${p.reviews})`:''}</div>
+        <div class="c-name">${esc(p.nom)}</div>
+        <div class="c-type">${esc(p.secteur)}${p.rating?` · ⭐${p.rating} (${p.reviews})`:''}</div>
       </div>
       <div class="c-bdg ${qi.bdg}">${qi.lbl}</div>
     </div>
-    <div class="c-why">${siteInfo}${p.tel?' · 📞 '+p.tel:''}</div>
-    ${p.why?`<div class="c-meta">💡 ${p.why}</div>`:''}
-    ${p.adresse?`<div class="c-meta">📍 ${p.adresse}</div>`:''}
+    <div class="c-why">${siteInfo}${p.tel?' · 📞 '+esc(p.tel):''}</div>
+    ${p.why?`<div class="c-meta">💡 ${esc(p.why)}</div>`:''}
+    ${p.adresse?`<div class="c-meta">📍 ${esc(p.adresse)}</div>`:''}
     <div class="c-score">
       <div class="sb"><div class="sf" style="width:${sc}%;background:${scC}"></div></div>
       <div class="st" style="color:${scC}">${sc}%</div>
     </div>
     <div class="c-acts">
-<div class="act ${p.called?'av':''}" onclick="tog('${p.id}','called')">${p.called?'📞 Appelé':'📞 Appeler'}</div>
-      <div class="act ${p.hot?'ar':''}" onclick="tog('${p.id}','hot')" style="${p.hot?'background:var(--amber-d);color:var(--amber);border-color:var(--amber)':''}">${p.hot?'🔥 Chaud ✓':'🔥 Prospect chaud'}</div>
-      <div class="act ${p.rdv?'ar':''}" onclick="tog('${p.id}','rdv')">${p.rdv?'📅 RDV ✓':'📅 RDV'}</div>
-      <div class="act ${p.refused?'ano':''}" onclick="tog('${p.id}','refused')">${p.refused?'❌ Refus':'❌ Refus'}</div>
-      ${p.tel?`<div class="act" onclick="window.location.href='tel:${p.tel.replace(/\s/g,'')}'">📞 Appeler</div>`:''}
-      ${p.adresse?`<div class="act" onclick="openMaps('${p.adresse.replace(/'/g,"\\'")}')">📍 Maps</div>`:''}
-<div class="act" onclick="del('${p.id}')" style="color:var(--amber)">📦 Archiver</div>
-<div class="act" onclick="block('${p.id}')" style="color:var(--red)">🚫 Bloquer</div>
+      <div class="act av" onclick="toSuivi('${p.id}')">➕ À appeler</div>
+      ${p.adresse?`<div class="act" onclick="openMaps('${p.id}')">📍 Maps</div>`:''}
+      <div class="act" onclick="del('${p.id}')" style="color:var(--amber)">📦 Archiver</div>
+      <div class="act" onclick="block('${p.id}')" style="color:var(--red)">🚫 Ne plus proposer</div>
     </div>`;
   return div;
 }
 
-function tog(id,field){
-  const p=prospects.find(x=>x.id===id);if(!p)return;
-  p[field]=!p[field];
-  if(field==='refused'&&p[field])p.visited=true;
-  if(field==='visited'&&p[field]&&p.refused)p.refused=false;
-  save();renderResults();updateRetour();renderRoute();
+function toSuivi(id){
+  const p=byId(id);if(!p)return;
+  p.suivi=newSuivi('appeler'); touch(p);
+  save(); renderResults(); renderSuivi();
+  toast('📋 Ajouté au suivi');
 }
 
 function del(id){
-  const p=prospects.find(x=>x.id===id);if(!p)return;
-  p.archived=true;
-  save();renderResults();updateRetour();renderRoute();
+  const p=byId(id);if(!p)return;
+  p.archived=true; touch(p);
+  save();renderResults();
   toast('Entreprise archivée');
 }
 
 function block(id){
-  const p=prospects.find(x=>x.id===id);if(!p)return;
-  p.blocked=true;p.archived=true;
-  const blocked=JSON.parse(localStorage.getItem('blocked_ids')||'[]');
-  if(!blocked.includes(id)){blocked.push(id);localStorage.setItem('blocked_ids',JSON.stringify(blocked));}
-  save();renderResults();updateRetour();renderRoute();
-  toast('Entreprise bloquée — ne réapparaîtra plus');
+  const p=byId(id);if(!p)return;
+  p.blocked=true;p.archived=true;touch(p);
+  if(!blocked.includes(id))blocked.push(id);
+  save();renderResults();
+  toast('Ne réapparaîtra plus');
 }
 
-function openMaps(addr){
-  window.open(`https://www.google.com/maps/search/${encodeURIComponent(addr)}`, '_blank');
+function openMaps(id){
+  const p=byId(id);if(!p||!p.adresse)return;
+  window.open(`https://www.google.com/maps/search/${encodeURIComponent(p.nom+' '+p.adresse)}`,'_blank');
 }
 
-function setMf(f,el){
-  mfMode=f;
-  document.querySelectorAll('.mf').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on');renderRoute();
+// ---------- Suivi ----------
+function toggleAdd(){ document.getElementById('add-box').classList.toggle('on'); }
+
+function addManual(){
+  const nom=document.getElementById('add-nom').value.trim();
+  if(!nom){toast('Le nom est obligatoire');return;}
+  const tel=document.getElementById('add-tel').value.trim();
+  const secteur=document.getElementById('add-sect').value.trim().toLowerCase();
+  const st=document.getElementById('add-st').value;
+  const note=document.getElementById('add-note').value.trim();
+  const nt=normTel(tel);
+  const dup=nt&&prospects.find(p=>p.suivi&&normTel(p.tel)===nt);
+  if(dup){toast(`Déjà dans ton suivi : ${dup.nom}`);return;}
+  // Même numéro qu'un résultat de recherche : on reprend sa fiche plutôt que d'en créer une
+  let p=nt&&prospects.find(x=>x.nom&&!x.suivi&&normTel(x.tel)===nt);
+  if(!p){ p={id:'m_'+Date.now(),nom,tel,secteur,manual:true,adresse:'',website:'',hasWebsite:false,createdAt:Date.now()}; prospects.unshift(p); }
+  p.archived=false;
+  p.suivi=newSuivi(st);
+  if(note) p.suivi.notes.push({t:Date.now(),txt:note});
+  touch(p);
+  ['add-nom','add-tel','add-sect','add-note'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('add-box').classList.remove('on');
+  save(); renderAll();
+  toast('📋 Ajouté au suivi');
 }
 
-function renderRoute(){
-  const wrap=document.getElementById('stops');
-  let targets=prospects.filter(p=>p.qualif!=='low');
-  if(mfMode==='top')targets=targets.filter(p=>p.qualif==='top');
-  if(mfMode==='rem')targets=targets.filter(p=>!p.visited&&!p.rdv&&!p.refused);
-  targets.sort((a,b)=>{
-    if(a.visited&&!b.visited)return 1;
-    if(b.visited&&!a.visited)return -1;
-    return(b.score||0)-(a.score||0);
-  });
-  if(!targets.length){
-    wrap.innerHTML='<div class="empty" style="padding:14px;font-size:12px"><div class="ei">🗺</div>'+(prospects.length?'Tous traités !':'Lance une recherche')+'</div>';
+function setStatut(id,st){
+  const p=byId(id);if(!p||!p.suivi)return;
+  const s=p.suivi, from=s.statut;
+  if(from===st)return;
+  // Un passage depuis "À appeler / Pas décroché / Rappel" = un appel passé (pour les stats du Retour)
+  const call=PRE_CALL.includes(from)&&st!=='appeler';
+  s.hist.push({t:Date.now(),from,to:st,call});
+  s.statut=st;
+  if(st==='nrp') s.tentatives=(s.tentatives||0)+1;
+  touch(p); save(); renderSuivi(); renderRetour();
+}
+
+function noAnswer(id){
+  const p=byId(id);if(!p||!p.suivi)return;
+  const s=p.suivi;
+  if(s.statut!=='nrp') return setStatut(id,'nrp');
+  s.tentatives=(s.tentatives||0)+1;
+  s.hist.push({t:Date.now(),from:'nrp',to:'nrp',call:true});
+  touch(p); save(); renderSuivi(); renderRetour();
+  toast(`📵 ${s.tentatives} tentative${s.tentatives>1?'s':''}`);
+}
+
+function setField(id,f,v){
+  const p=byId(id);if(!p||!p.suivi)return;
+  if(f==='tel') p.tel=v; else p.suivi[f]=v;
+  touch(p);
+  if(f==='rappel'&&v&&['appeler','nrp'].includes(p.suivi.statut)) return setStatut(id,'rappel');
+  save(); renderSuivi();
+}
+
+function addNote(id){
+  const p=byId(id);if(!p||!p.suivi)return;
+  const txt=(drafts[id]||'').trim(); if(!txt)return;
+  p.suivi.notes.push({t:Date.now(),txt});
+  delete drafts[id];
+  touch(p); save(); renderSuivi();
+}
+
+function removeSuivi(id){
+  const p=byId(id);if(!p||!p.suivi)return;
+  if(!confirm(`Retirer « ${p.nom} » du suivi ? Ses notes seront perdues.`))return;
+  p.suivi=null; p.archived=true; touch(p);
+  save(); renderAll();
+}
+
+function toggleCard(id){ document.querySelectorAll(`.sv[data-id="${id}"]`).forEach(el=>el.classList.toggle('open')); }
+function grpToggle(k,open){ if(open)closedGroups.delete(k); else closedGroups.add(k); }
+
+function isToday(p){
+  const s=p.suivi; if(DONE.includes(s.statut))return false;
+  if(s.statut==='maquette')return true;
+  return !!(s.rappel&&new Date(s.rappel)<=endOfToday());
+}
+
+function svCard(p){
+  const s=p.suivi, id=p.id;
+  const openNow=document.querySelector(`.sv[data-id="${id}"].open`);
+  const sub=[STL[s.statut]];
+  if(s.statut==='nrp'&&s.tentatives) sub.push(`${s.tentatives} tentative${s.tentatives>1?'s':''}`);
+  let late=false;
+  if(s.rappel&&!DONE.includes(s.statut)){ const d=new Date(s.rappel); late=d<new Date(); sub.push((late?'⚠️ ':'⏰ ')+fmt(d)); }
+  const last=s.notes.length?s.notes[s.notes.length-1].txt:'';
+  const tel=(p.tel||'').replace(/[^\d+]/g,'');
+  const opts=ST.map(([k,l])=>`<option value="${k}" ${k===s.statut?'selected':''}>${l}</option>`).join('');
+  const notes=[...s.notes].reverse().map(n=>`<div class="nt-i"><div class="nt-d">${fmt(new Date(n.t))}</div>${esc(n.txt)}</div>`).join('');
+  return `<div class="sv ${openNow?'open':''}" data-id="${id}" style="border-left-color:${ST_COL[s.statut]}">
+    <div class="sv-top" onclick="toggleCard('${id}')">
+      <div class="c-em">${EM[p.secteur]||'🏢'}</div>
+      <div class="sv-inf">
+        <div class="sv-name">${esc(p.nom)}</div>
+        <div class="sv-sub ${late?'late':''}">${esc(sub.join(' · '))}</div>
+        ${last?`<div class="sv-sub">📝 ${esc(last.length>70?last.slice(0,70)+'…':last)}</div>`:''}
+      </div>
+      ${tel?`<a class="tel-btn" href="tel:${tel}" onclick="event.stopPropagation()">📞</a>`:''}
+    </div>
+    <div class="sv-det">
+      ${!p.manual&&p.why?`<div class="sv-sub">💡 ${esc(p.why)}${p.rating?` · ⭐${p.rating} (${p.reviews})`:''}</div>`:''}
+      <div class="row2">
+        <div><div class="lbl">Étape</div><select class="inp" onchange="setStatut('${id}',this.value)">${opts}</select></div>
+        <div><div class="lbl">Rappel prévu</div><input class="inp" type="datetime-local" value="${esc(s.rappel)}" onchange="setField('${id}','rappel',this.value)"></div>
+      </div>
+      ${PRE_CALL.includes(s.statut)?`<button class="btn ghost" onclick="noAnswer('${id}')">📵 Pas décroché (+1 tentative)</button>`:''}
+      <div class="row2">
+        <div><div class="lbl">Téléphone</div><input class="inp" type="tel" value="${esc(p.tel)}" onchange="setField('${id}','tel',this.value.trim())"></div>
+        <div><div class="lbl">Mail</div><input class="inp" type="email" value="${esc(s.mail)}" placeholder="pour la maquette" onchange="setField('${id}','mail',this.value.trim())"></div>
+      </div>
+      ${s.statut==='perdu'?`<div><div class="lbl">Raison exacte du refus</div><input class="inp" list="reasons-dl" value="${esc(s.raison)}" placeholder="Choisis ou écris" onchange="setField('${id}','raison',this.value.trim())"></div>`:''}
+      <div class="lbl">Notes</div>
+      <textarea class="inp" rows="2" placeholder="Nouvelle note…" oninput="drafts['${id}']=this.value">${esc(drafts[id]||'')}</textarea>
+      <button class="btn" onclick="addNote('${id}')">Ajouter la note</button>
+      ${notes?`<div class="notes">${notes}</div>`:''}
+      <div class="c-acts">
+        ${p.adresse?`<div class="act" onclick="openMaps('${id}')">📍 Maps</div>`:''}
+        ${p.website?`<a class="act" href="${esc(p.website)}" target="_blank" rel="noopener" style="text-decoration:none">🌐 Site</a>`:''}
+        <div class="act" onclick="removeSuivi('${id}')" style="color:var(--red)">Retirer du suivi</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderSuivi(){
+  const wrap=document.getElementById('sv-list'); if(!wrap)return;
+  const q=(document.getElementById('sv-q').value||'').trim().toLowerCase();
+  let list=prospects.filter(p=>p.suivi&&p.nom);
+  const active=list.filter(p=>!DONE.includes(p.suivi.statut)).length;
+  const signed=list.filter(p=>p.suivi.statut==='signe').length;
+  document.getElementById('sv-count').textContent=`${active} en cours · ${signed} signé${signed>1?'s':''}`;
+  if(q) list=list.filter(p=>p.nom.toLowerCase().includes(q));
+  if(!list.length){
+    wrap.innerHTML=`<div class="empty"><div class="ei">📋</div>${q?'Aucun résultat':'Ton suivi est vide.<br>Ajoute des prospects depuis la Recherche (➕ À appeler) ou avec ➕ Ajouter.'}</div>`;
     return;
   }
-  wrap.innerHTML='';
-  targets.slice(0,8).forEach((p,i)=>{
-    const done=p.visited||p.rdv||p.refused;
-    const m=i*15,h=14+Math.floor(m/60),mn=(m%60).toString().padStart(2,'0');
-    const div=document.createElement('div');div.className='stop';
-    div.innerHTML=`
-      <div class="sn ${done?'done':''}">${done?'✓':(i+1)}</div>
-      <div class="si">
-        <div class="s-name">${EM[p.secteur]||'🏢'} ${p.nom}</div>
-        <div class="s-time">${h}h${mn}${p.adresse?' · '+p.adresse.split(',')[0]:''}</div>
-      </div>
-      ${p.adresse?`<button class="s-cp" onclick="openMaps('${p.adresse.replace(/'/g,"\\'")}')">📍</button>`:''}`;
-    wrap.appendChild(div);
+  const byRappel=(a,b)=>{
+    const ra=a.suivi.rappel?new Date(a.suivi.rappel).getTime():Infinity, rb=b.suivi.rappel?new Date(b.suivi.rappel).getTime():Infinity;
+    return ra-rb||(b.suivi.ajoute||0)-(a.suivi.ajoute||0);
+  };
+  let html='';
+  const today=list.filter(isToday).sort(byRappel);
+  if(today.length){
+    html+=`<details class="grp today" open><summary>🔔 À faire aujourd'hui — ${today.length}</summary>${today.map(svCard).join('')}</details>`;
+  }
+  ST.forEach(([k,l])=>{
+    const g=list.filter(p=>p.suivi.statut===k&&!isToday(p)).sort(byRappel);
+    if(!g.length)return;
+    html+=`<details class="grp" ${closedGroups.has(k)?'':'open'} ontoggle="grpToggle('${k}',this.open)"><summary>${l} — ${g.length}</summary>${g.map(svCard).join('')}</details>`;
   });
+  wrap.innerHTML=html;
 }
 
-function openFirst(){
-  const t=prospects.filter(p=>!p.visited&&!p.rdv&&p.adresse);
-  if(!t.length){toast('Aucun prospect avec adresse');return;}
-  openMaps(t[0].adresse);
+// ---------- Retour ----------
+function setPer(p,el){
+  period=p;
+  document.querySelectorAll('[data-per]').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on'); renderRetour();
 }
 
-function updateRetour(){
-  const v=prospects.filter(p=>p.visited).length;
-  const r=prospects.filter(p=>p.rdv).length;
-  const no=prospects.filter(p=>p.refused).length;
-  const rt=v>0?Math.round(r/v*100):0;
-  const sc=v>=3?(r>=2?'🔥':r>=1?'👍':'😐'):'—';
-  document.getElementById('k-t').textContent=prospects.length;
-  document.getElementById('k-v').textContent=v;
-  document.getElementById('k-r').textContent=r;
-  document.getElementById('k-no').textContent=no;
-  document.getElementById('k-rt').textContent=rt+'%';
-  document.getElementById('k-hot').textContent=prospects.filter(p=>p.hot).length;
-document.getElementById('k-called').textContent=prospects.filter(p=>p.called).length;
-  document.getElementById('k-sc').textContent=sc;
-  const vl=document.getElementById('vlist');
-  const vp=prospects.filter(p=>p.visited);
-  if(!vp.length){vl.innerHTML='<div class="empty" style="padding:10px;font-size:12px">Aucune visite encore</div>';return;}
-  vl.innerHTML='';
-  vp.forEach(p=>{
-    const col=p.rdv?'var(--pink)':p.refused?'var(--red)':'var(--blue)';
-    const st=p.rdv?'RDV':p.refused?'Refus':'Visité';
-    const d=document.createElement('div');d.className='vi';
-    d.innerHTML=`<div class="vd" style="background:${col}"></div><div class="vn">${EM[p.secteur]||'🏢'} ${p.nom}</div><div class="vs" style="background:${col}22;color:${col}">${st}</div>`;
-    vl.appendChild(d);
-  });
-}
-
-async function analyse(){
-  const notes=document.getElementById('note-ta').value;
-  const v=prospects.filter(p=>p.visited);
-  const r=prospects.filter(p=>p.rdv);
-  const no=prospects.filter(p=>p.refused);
-  if(!v.length&&!notes){toast('Ajoute des visites ou des notes');return;}
-  const btn=document.querySelector('.ana-btn');
-  btn.textContent='⏳ Analyse...';btn.disabled=true;
-  const res=document.getElementById('ana-res');
-  res.style.display='block';res.textContent='Analyse en cours...';
-
-  try{
-    const resp=await fetch(ANTHROPIC_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:500,
-        messages:[{role:'user',content:`Tu es un coach prospection pour Hugo, freelance web designer de moins de 20 ans.
-
-Séance :
-- Visités : ${v.map(p=>p.nom+' ('+p.secteur+')').join(', ')||'aucun'}
-- RDV : ${r.map(p=>p.nom).join(', ')||'aucun'}
-- Refus : ${no.map(p=>p.nom).join(', ')||'aucun'}
-- Taux : ${v.length>0?Math.round(r.length/v.length*100):0}%
-- Notes : "${notes||'aucune'}"
-
-Analyse en 3 parties :
-✅ CE QUI A BIEN MARCHÉ
-🔧 CE QUI PEUT S'AMÉLIORER
-🎯 1 CONSEIL PRIORITAIRE
-
-Direct, bienveillant, 150 mots max.`}]
-      })
-    });
-    const data=await resp.json();
-    res.textContent=data.content?.[0]?.text||'Pas de réponse';
-  }catch(e){res.textContent='Erreur — réessaie.';}
-  btn.textContent='🤖 Analyser avec l\'IA Claude';btn.disabled=false;
+function renderRetour(){
+  if(!document.getElementById('k-call'))return;
+  const start=period==='day'?new Date(new Date().setHours(0,0,0,0)).getTime():period==='week'?Date.now()-7*864e5:0;
+  const inS=prospects.filter(p=>p.suivi);
+  const ev=[]; inS.forEach(p=>(p.suivi.hist||[]).forEach(e=>{ if(e.t>=start) ev.push({...e,id:p.id}); }));
+  const calls=ev.filter(e=>e.call);
+  const noAns=calls.filter(e=>e.to==='nrp').length;
+  const reached=(to)=>new Set(ev.filter(e=>to.includes(e.to)).map(e=>e.id)).size;
+  document.getElementById('k-call').textContent=calls.length;
+  document.getElementById('k-dec').textContent=calls.length-noAns;
+  document.getElementById('k-maq').textContent=reached(['maquette','envoyee']);
+  document.getElementById('k-rdv').textContent=reached(['rdv']);
+  document.getElementById('k-sig').textContent=reached(['signe']);
+  const lostIds=new Set(ev.filter(e=>e.to==='perdu').map(e=>e.id));
+  document.getElementById('k-lost').textContent=lostIds.size;
+  const counts={};
+  inS.filter(p=>lostIds.has(p.id)&&p.suivi.statut==='perdu').forEach(p=>{const r=p.suivi.raison||'Non renseignée';counts[r]=(counts[r]||0)+1;});
+  const rs=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('reasons').innerHTML=rs.length?rs.map(([r,n])=>`<div class="reason"><span>${esc(r)}</span><b>${n}</b></div>`).join(''):'<div class="empty" style="padding:10px;font-size:12px">Aucun refus sur la période</div>';
 }
 
 init();
