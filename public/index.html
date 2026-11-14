@@ -227,6 +227,14 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
         <option value="tous">Tous types</option>
       </select>
     </div>
+    <div>
+      <div class="fl">Site web</div>
+      <select class="sel" id="f-site" onchange="lsSet('pp_fsite',this.value);renderResults()">
+        <option value="sans">Sans vrai site (aucun, Facebook, annuaire)</option>
+        <option value="faible">Sans site ou site faible (gratuit, non sécurisé)</option>
+        <option value="tous">Tous, même avec un vrai site</option>
+      </select>
+    </div>
     <button class="go-btn" id="go-btn" onclick="doSearch()">🔍 Trouver de vrais prospects</button>
   </div>
   <div class="results" id="results">
@@ -272,6 +280,8 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
       <div class="kpi"><div class="kv" id="k-lost" style="color:var(--red)">0</div><div class="kl">Perdus</div></div>
     </div>
     <div class="pg-sub">Repère (20 appels) : ~8-10 décrochés · ~2-3 petits « oui » · 1 RDV toutes les 2-3 séances.</div>
+    <div class="sec-lbl">Où les appels plantent</div>
+    <div class="reasons" id="plantes"></div>
     <div class="sec-lbl">Raisons des refus</div>
     <div class="reasons" id="reasons"></div>
   </div>
@@ -401,6 +411,7 @@ const STL = Object.fromEntries(ST);
 const ST_COL = {appeler:'var(--blue)',nrp:'var(--line2)',rappel:'var(--amber)',maquette:'var(--amber)',envoyee:'var(--blue)',rdv:'var(--pink)',bdc:'var(--pink)',signe:'var(--green)',perdu:'var(--red)'};
 const PRE_CALL = ['appeler','nrp','rappel']; // étapes où le prochain geste est un appel
 const DONE = ['signe','perdu'];
+const PLANTE = [['1','1 · Accroche'],['2','2 · Observation'],['3','3 · Rebond'],['4','4 · Offre'],['5','5 · Petite demande']];
 const REASONS = ['Pas besoin','A déjà un site','Bouche-à-oreille suffit','Pas le temps','Trop cher','Pas intéressé','Faux numéro / fermé'];
 
 // ---------- Utilitaires ----------
@@ -422,6 +433,12 @@ const PRIO = ['peintre','paysagiste','menuisier','couvreur','maçon','plombier',
 const PSEUDO = /facebook\.com|instagram\.com|pagesjaunes|linktr\.ee|business\.site|google\.com|tiktok\.com/i;
 // Sites gratuits / constructeurs bas de gamme = site faible, prospect qui croit déjà au web
 const CHEAP = /wixsite\.com|jimdo|site123|webnode|e-monsite|wordpress\.com|blogspot|over-blog|godaddysites|sitew\./i;
+
+// Franchises / réseaux : ils ne décident pas de leur site → à ne pas appeler
+const FRANCHISE = /illico travaux|camif|france r[ée]nov|lapeyre|tryba|grosfillex|k ?par ?k|art (&|et) fen[êe]tres|monsieur store|franciaflex|oknoplast|\bpoint\.? ?p\b|leroy merlin|castorama|bricomarch|weldom|daniel moquet|jardins? de gally|truffaut|hellio|effy|speedy|norauto|midas|feu vert|\bpoint s\b|euromaster|carglass|france pare.?brise|vulco|\bad garage|top garage|roady|motrio|eurorepar|profil plus|first stop|yves rocher|body minute|esthetic center|franck provost|jean.?louis david|dessange|tchip|saint.?algue|camille albane|coiff ?(&|and) ?co|vog coiffure|fabio salsa|mcdonald|burger king|\bkfc\b|domino'?s|pizza hut|subway|buffalo grill|courtepaille|hippopotamus|o'?tacos|del arte|flunch|l[ée]on de bruxelles|la boucherie|crep'?eat|class'?croute|brioche dor[ée]e|starbucks|orpi|century 21|laforet|guy hoquet|st[ée]phane plaza/i;
+// Pages d'agence d'un grand réseau (ex. marque.fr/agences/nantes)
+const NETWORK_URL = /\/(agences?|magasins?|centres?|points?-de-vente|franchises?|garages?|salons?|restaurants?|instituts?)\//i;
+function isFranchise(p){ return FRANCHISE.test(p.nom||'')||NETWORK_URL.test(p.website||''); }
 
 function siteType(p){
   const w=(p.website||'').trim();
@@ -447,7 +464,9 @@ function scoreP(p){
   if(PRIO.includes(p.secteur)){score+=10;}
   score=Math.max(5,Math.min(99,score));
   const qualif=score>=70?'top':score>=50?'mid':'low';
-  return {...p,siteType:t,score,qualif,why:why.join(' · ')};
+  const franchise=isFranchise(p);
+  if(franchise){score=5;why.unshift('franchise / réseau : à passer');}
+  return {...p,siteType:t,score,qualif:franchise?'low':qualif,franchise,why:why.join(' · ')};
 }
 function hydrate(list){return (list||[]).map(p=>p.nom?scoreP(p):p);}
 
@@ -463,7 +482,7 @@ function mergeData(a,b){
 // Version allégée envoyée au serveur (les scores sont recalculés à l'affichage)
 function slim(p){
   if(p.archived&&!p.suivi) return {id:p.id,archived:true,u:p.u||0};
-  const {score,qualif,why,siteType,...r}=p; return r;
+  const {score,qualif,why,siteType,franchise,...r}=p; return r;
 }
 function setSync(msg,err){const s=document.getElementById('sync');s.textContent=msg;s.className='sync'+(err?' err':'');}
 function cache(){lsSet('pp_cache',JSON.stringify({prospects:prospects.map(slim),blocked}));}
@@ -548,6 +567,7 @@ function logout(msg){
 
 // ---------- Init / navigation ----------
 function init(){
+  const fsEl=document.getElementById('f-site'); if(fsEl) fsEl.value=lsGet('pp_fsite','sans');
   const saved=lsGet('gapi_key','');
   if(saved){ apiKey=saved; showOk(); }
   try{ const c=JSON.parse(lsGet('pp_cache','null')); if(c){ prospects=hydrate(c.prospects); blocked=c.blocked||[]; } }catch(e){}
@@ -653,7 +673,7 @@ async function doSearch(){
   }
   save();
   renderResults();
-  const nTop=scored.filter(p=>p.qualif==='top').length;
+  const nTop=scored.filter(p=>p.qualif==='top'&&!p.franchise).length;
   toast(`✅ ${scored.length} trouvés · ${nTop} prioritaires${known?` · ${known} déjà traités masqués`:''}`);
   btn.disabled=false;
 }
@@ -666,9 +686,15 @@ function getQI(p){
 
 function renderResults(){
   const area=document.getElementById('results');
-  const act=prospects.filter(p=>p.nom&&!p.archived&&!p.suivi).sort((a,b)=>(b.score||0)-(a.score||0));
+  const all=prospects.filter(p=>p.nom&&!p.archived&&!p.suivi);
+  const fs=(document.getElementById('f-site')||{}).value||'sans';
+  const okSite=fs==='sans'?['none','pseudo']:fs==='faible'?['none','pseudo','nohttps','cheap']:null;
+  const act=all.filter(p=>!p.franchise&&(!okSite||okSite.includes(p.siteType))).sort((a,b)=>(b.score||0)-(a.score||0));
+  const nFr=all.filter(p=>p.franchise).length, nSite=all.length-nFr-act.length;
+  if(!act.length&&all.length){area.innerHTML=`<div class="empty"><div class="ei">🔎</div>Aucun prospect avec ce filtre.<br>${nSite?nSite+' masqué'+(nSite>1?'s':'')+' car ils ont un site. ':''}${nFr?nFr+' franchise'+(nFr>1?'s':'')+' masquée'+(nFr>1?'s':'')+'.':''}<br>Change le filtre « Site web » ou la ville.</div>`;return;}
   if(!act.length){area.innerHTML='<div class="empty"><div class="ei">🎯</div>'+(apiKey?'Lance une recherche':'Configure ta clé API et lance la recherche')+'</div>';return;}
   area.innerHTML='';
+  if(nSite||nFr){const n=document.createElement('div');n.className='pg-sub';n.style.margin='0 0 8px';n.textContent=`Masqués : ${nSite?nSite+' avec un site (filtre « Site web »)':''}${nSite&&nFr?' · ':''}${nFr?nFr+' franchise'+(nFr>1?'s':''):''}`;area.appendChild(n);}
   const groups=[
     ['top','🎯 Cibles prioritaires'],
     ['mid','⚠️ À creuser (regarde le site avant d\'appeler)'],
@@ -797,7 +823,7 @@ function setField(id,f,v){
   const p=byId(id);if(!p||!p.suivi)return;
   if(f==='tel') p.tel=v; else p.suivi[f]=v;
   touch(p);
-  if(f==='rappel'&&v&&['appeler','nrp'].includes(p.suivi.statut)) return setStatut(id,'rappel');
+  if(f==='rappel'&&v&&['appeler','nrp','perdu'].includes(p.suivi.statut)) return setStatut(id,'rappel');
   save(); renderSuivi();
 }
 
@@ -857,7 +883,9 @@ function svCard(p){
         <div><div class="lbl">Téléphone</div><input class="inp" type="tel" value="${esc(p.tel)}" onchange="setField('${id}','tel',this.value.trim())"></div>
         <div><div class="lbl">Mail</div><input class="inp" type="email" value="${esc(s.mail)}" placeholder="pour la maquette" onchange="setField('${id}','mail',this.value.trim())"></div>
       </div>
-      ${s.statut==='perdu'?`<div><div class="lbl">Raison exacte du refus</div><input class="inp" list="reasons-dl" value="${esc(s.raison)}" placeholder="Choisis ou écris" onchange="setField('${id}','raison',this.value.trim())"></div>`:''}
+      ${s.statut==='perdu'?`<div><div class="lbl">Raison exacte du refus</div><input class="inp" list="reasons-dl" value="${esc(s.raison)}" placeholder="Choisis ou écris" onchange="setField('${id}','raison',this.value.trim())"></div>
+      <div><div class="lbl">Perdu à l'étape</div><select class="inp" onchange="setField('${id}','plante',this.value)"><option value="">— choisir —</option>${PLANTE.map(([k,l])=>`<option value="${k}" ${s.plante===k?'selected':''}>${l}</option>`).join('')}</select></div>
+      ${/pas le temps/i.test(s.raison||'')?`<div class="pg-sub" style="color:var(--amber)">⏰ « Pas le temps » = souvent un rappel, pas un refus. Tu as proposé de rappeler ? Mets une date dans « Rappel prévu ».</div>`:''}`:''}
       <div class="lbl">Notes</div>
       <textarea class="inp" rows="2" placeholder="Nouvelle note…" oninput="drafts['${id}']=this.value">${esc(drafts[id]||'')}</textarea>
       <button class="btn" onclick="addNote('${id}')">Ajouter la note</button>
@@ -924,6 +952,9 @@ function renderRetour(){
   document.getElementById('k-lost').textContent=lostIds.size;
   const counts={};
   inS.filter(p=>lostIds.has(p.id)&&p.suivi.statut==='perdu').forEach(p=>{const r=p.suivi.raison||'Non renseignée';counts[r]=(counts[r]||0)+1;});
+  const pc={}; inS.filter(p=>lostIds.has(p.id)&&p.suivi.statut==='perdu').forEach(p=>{const k=p.suivi.plante||'';pc[k]=(pc[k]||0)+1;});
+  const pl=[...PLANTE,['','Étape non renseignée']].filter(([k])=>pc[k]).map(([k,l])=>`<div class="reason"><span>${esc(l)}</span><b>${pc[k]}</b></div>`).join('');
+  document.getElementById('plantes').innerHTML=pl||'<div class="empty" style="padding:10px;font-size:12px">Aucun refus sur la période</div>';
   const rs=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   document.getElementById('reasons').innerHTML=rs.length?rs.map(([r,n])=>`<div class="reason"><span>${esc(r)}</span><b>${n}</b></div>`).join(''):'<div class="empty" style="padding:10px;font-size:12px">Aucun refus sur la période</div>';
 }
