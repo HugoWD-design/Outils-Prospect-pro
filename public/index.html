@@ -639,7 +639,7 @@ async function doSearch(){
   document.getElementById('results').innerHTML='<div class="loading"><div class="spin"></div>Recherche de vraies entreprises...</div>';
   const ville=document.getElementById('f-ville').value;
   const secteurs=[...activeChips];
-  let allResults=[];
+  let allResults=[], legacy=false;
 
   for(const secteur of secteurs){
     try{
@@ -654,6 +654,7 @@ async function doSearch(){
         continue;
       }
       const data=await resp.json();
+      if(data.api==='legacy') legacy=true;
       const now=Date.now();
       const places=(data.results||[]).map(p=>({...p,secteur,createdAt:now,u:now,id:p.id||('p_'+now+'_'+Math.random())}));
       allResults=[...allResults,...places];
@@ -675,6 +676,7 @@ async function doSearch(){
   renderResults();
   const nTop=scored.filter(p=>p.qualif==='top'&&!p.franchise).length;
   toast(`✅ ${scored.length} trouvés · ${nTop} prioritaires${known?` · ${known} déjà traités masqués`:''}`);
+  if(legacy) setTimeout(()=>toast('⚠️ 10 résultats max par métier : active « Places API (New) » sur ta console Google pour en avoir 60'),3200);
   btn.disabled=false;
 }
 
