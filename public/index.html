@@ -62,6 +62,8 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
 .br{background:var(--pink-d);color:var(--pink);}
 .c-why{font-size:12px;color:var(--txt2);line-height:1.55;margin-bottom:8px;}
 .c-meta{font-size:11px;color:var(--txt2);margin-bottom:8px;line-height:1.6;}
+.c-meta a{color:var(--blue);}
+.reg-closed{color:var(--red);font-weight:600;}
 .c-score{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
 .sb{flex:1;height:3px;background:var(--line);border-radius:2px;overflow:hidden;}
 .sf{height:100%;border-radius:2px;}
@@ -466,7 +468,9 @@ function scoreP(p){
   const qualif=score>=70?'top':score>=50?'mid':'low';
   const franchise=isFranchise(p);
   if(franchise){score=5;why.unshift('franchise / réseau : à passer');}
-  return {...p,siteType:t,score,qualif:franchise?'low':qualif,franchise,why:why.join(' · ')};
+  const closed=!!(p.reg&&p.reg.etat==='C');
+  if(closed){score=5;why.unshift('❌ fermée au registre : à passer');}
+  return {...p,siteType:t,score,qualif:(franchise||closed)?'low':qualif,franchise,closed,why:why.join(' · ')};
 }
 function hydrate(list){return (list||[]).map(p=>p.nom?scoreP(p):p);}
 
@@ -482,7 +486,7 @@ function mergeData(a,b){
 // Version allégée envoyée au serveur (les scores sont recalculés à l'affichage)
 function slim(p){
   if(p.archived&&!p.suivi) return {id:p.id,archived:true,u:p.u||0};
-  const {score,qualif,why,siteType,franchise,...r}=p; return r;
+  const {score,qualif,why,siteType,franchise,closed,...r}=p; return r;
 }
 function setSync(msg,err){const s=document.getElementById('sync');s.textContent=msg;s.className='sync'+(err?' err':'');}
 function cache(){lsSet('pp_cache',JSON.stringify({prospects:prospects.map(slim),blocked}));}
@@ -674,6 +678,7 @@ async function doSearch(){
   }
   save();
   renderResults();
+  checkRegMany(visibleIds().slice(0,40)); // vérif registre en fond (entreprise fermée, gérant…)
   const nTop=scored.filter(p=>p.qualif==='top'&&!p.franchise).length;
   toast(`✅ ${scored.length} trouvés · ${nTop} prioritaires${known?` · ${known} déjà traités masqués`:''}`);
   if(legacy) setTimeout(()=>toast('⚠️ 10 résultats max par métier : active « Places API (New) » sur ta console Google pour en avoir 60'),3200);
@@ -686,12 +691,18 @@ function getQI(p){
   return{cls:'cl',bdg:'bl',lbl:'💤 Peu probable'};
 }
 
-function renderResults(){
-  const area=document.getElementById('results');
+function activeResults(){
   const all=prospects.filter(p=>p.nom&&!p.archived&&!p.suivi);
   const fs=(document.getElementById('f-site')||{}).value||'sans';
   const okSite=fs==='sans'?['none','pseudo']:fs==='faible'?['none','pseudo','nohttps','cheap']:null;
   const act=all.filter(p=>!p.franchise&&(!okSite||okSite.includes(p.siteType))).sort((a,b)=>(b.score||0)-(a.score||0));
+  return {all,act};
+}
+function visibleIds(){ return activeResults().act.filter(p=>p.qualif!=='low').map(p=>p.id); }
+
+function renderResults(){
+  const area=document.getElementById('results');
+  const {all,act}=activeResults();
   const nFr=all.filter(p=>p.franchise).length, nSite=all.length-nFr-act.length;
   if(!act.length&&all.length){area.innerHTML=`<div class="empty"><div class="ei">🔎</div>Aucun prospect avec ce filtre.<br>${nSite?nSite+' masqué'+(nSite>1?'s':'')+' car ils ont un site. ':''}${nFr?nFr+' franchise'+(nFr>1?'s':'')+' masquée'+(nFr>1?'s':'')+'.':''}<br>Change le filtre « Site web » ou la ville.</div>`;return;}
   if(!act.length){area.innerHTML='<div class="empty"><div class="ei">🎯</div>'+(apiKey?'Lance une recherche':'Configure ta clé API et lance la recherche')+'</div>';return;}
@@ -733,6 +744,7 @@ function makeCard(p){
     <div class="c-why">${siteInfo}${p.tel?' · 📞 '+esc(p.tel):''}</div>
     ${p.why?`<div class="c-meta">💡 ${esc(p.why)}</div>`:''}
     ${p.adresse?`<div class="c-meta">📍 ${esc(p.adresse)}</div>`:''}
+    ${regLine(p)}
     <div class="c-score">
       <div class="sb"><div class="sf" style="width:${sc}%;background:${scC}"></div></div>
       <div class="st" style="color:${scC}">${sc}%</div>
@@ -740,6 +752,7 @@ function makeCard(p){
     <div class="c-acts">
       <div class="act av" onclick="toSuivi('${p.id}')">➕ À appeler</div>
       ${p.adresse?`<div class="act" onclick="openMaps('${p.id}')">📍 Maps</div>`:''}
+      ${p.reg?'':`<div class="act" onclick="checkReg('${p.id}')">🏛 Registre</div>`}
       <div class="act" onclick="del('${p.id}')" style="color:var(--amber)">📦 Archiver</div>
       <div class="act" onclick="block('${p.id}')" style="color:var(--red)">🚫 Ne plus proposer</div>
     </div>`;
@@ -751,6 +764,7 @@ function toSuivi(id){
   p.suivi=newSuivi('appeler'); touch(p);
   save(); renderResults(); renderSuivi();
   toast('📋 Ajouté au suivi');
+  if(!p.reg) checkReg(id,true);
 }
 
 function del(id){
@@ -771,6 +785,245 @@ function block(id){
 function openMaps(id){
   const p=byId(id);if(!p||!p.adresse)return;
   window.open(`https://www.google.com/maps/search/${encodeURIComponent(p.nom+' '+p.adresse)}`,'_blank');
+}
+
+// ---------- Registre des entreprises (API officielle gratuite, sans clé) ----------
+const REG_URL='https://recherche-entreprises.api.gouv.fr/search';
+const TRANCHE={'00':'0 salarié','01':'1-2 salariés','02':'3-5 salariés','03':'6-9 salariés','11':'10-19 salariés','12':'20-49 salariés','21':'50-99 salariés','22':'100-199 salariés','31':'200-249 salariés','32':'250-499 salariés'};
+const STOP=/^(sarl|sas|sasu|eurl|sa|sci|ets|etablissements?|entreprise|societe|ste|et|de|des|du|la|le|les|l|d|en|a|au|aux)$/;
+function normWords(s){return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').split(' ').filter(w=>w.length>1&&!STOP.test(w));}
+function overlap(a,b){const A=normWords(a),B=new Set(normWords(b));if(!A.length)return 0;return A.filter(w=>B.has(w)).length/A.length;}
+function nameScore(a,b){return Math.max(overlap(a,b),overlap(b,a));}
+function titleCase(s){return (s||'').toLowerCase().replace(/(^|[\s'-])(\p{L})/gu,(m,a,b)=>a+b.toUpperCase());}
+function cpOf(adr){const m=(adr||'').match(/\b(\d{5})\b/);return m?m[1]:'';}
+function villeOf(adr){const m=(adr||'').match(/\b\d{5}\s+([^,]+)/);return m?m[1].trim():'';}
+function fmtCA(n){return n>=1e6?(n/1e6).toFixed(1).replace('.',',')+' M€':Math.round(n/1000)+' k€';}
+
+function pickDir(dirs){
+  const pp=(dirs||[]).filter(d=>d.type_dirigeant==='personne physique');
+  const d=pp.find(x=>/g[ée]rant|pr[ée]sident|directeur|exploitant/i.test(x.qualite||''))||pp[0];
+  if(d) return `${titleCase((d.prenoms||'').split(/[\s,]+/)[0])} ${titleCase(d.nom||'')}`.trim()+(d.qualite?` (${d.qualite.toLowerCase()})`:'');
+  const m=(dirs||[]).find(x=>x.denomination); return m?titleCase(m.denomination)+' (société)':'';
+}
+
+async function fetchReg(p){
+  const cp=cpOf(p.adresse), dep=cp?cp.slice(0,2):'44';
+  const q=(p.nom||'').split(/[|–—(]/)[0].trim().slice(0,80);
+  const url=`${REG_URL}?q=${encodeURIComponent(q)}&departement=${dep}&per_page=5`;
+  let r=await fetch(url);
+  if(r.status===429){ await new Promise(s=>setTimeout(s,1200)); r=await fetch(url); }
+  if(!r.ok) throw new Error('registre '+r.status);
+  const list=(await r.json()).results||[];
+  const cpMatch=e=>!!cp&&(e.siege?.code_postal===cp||(e.matching_etablissements||[]).some(m=>m.code_postal===cp));
+  let best=null,bs=-1,bn=0;
+  for(const e of list){
+    const n=Math.max(nameScore(q,e.nom_complet),nameScore(q,e.nom_raison_sociale||''));
+    const s=n+(cpMatch(e)?0.5:0);
+    if(s>bs){bs=s;best=e;bn=n;}
+  }
+  if(!best||bn<0.3) return {none:true,t:Date.now()};
+  const fin=best.finances||{}; const yrs=Object.keys(fin).filter(y=>fin[y]&&fin[y].ca!=null).sort();
+  const caY=yrs[yrs.length-1];
+  return {
+    siren:best.siren, nom:best.nom_complet||'', etat:best.etat_administratif||'',
+    creation:best.date_creation||'', eff:TRANCHE[best.tranche_effectif_salarie]||'',
+    ca:caY?fin[caY].ca:null, caY:caY||'', dir:pickDir(best.dirigeants),
+    sure:bn>=0.99||(bn>=0.5&&cpMatch(best)), t:Date.now(),
+  };
+}
+
+async function checkReg(id,quiet){
+  const p=byId(id); if(!p||!p.nom) return;
+  try{
+    p.reg=await fetchReg(p);
+    Object.assign(p,scoreP(p)); touch(p); save(); renderResults(); renderSuivi();
+    if(!quiet) toast(p.reg.none?'🏛 Introuvable au registre':p.reg.etat==='C'?'❌ Entreprise fermée':'🏛 Registre vérifié');
+  }catch(e){ if(!quiet) toast('⚠️ Registre injoignable, réessaie plus tard'); }
+}
+
+async function checkRegMany(ids){
+  for(const id of ids){
+    const p=byId(id); if(!p||p.reg) continue;
+    await checkReg(id,true);
+    await new Promise(s=>setTimeout(s,200)); // l'API accepte ~7 requêtes/s
+  }
+}
+
+function regLine(p){
+  const r=p.reg; if(!r) return '';
+  if(r.none) return `<div class="c-meta">🏛 Introuvable au registre · <a href="https://annuaire-entreprises.data.gouv.fr/rechercher?terme=${encodeURIComponent(p.nom)}" target="_blank" rel="noopener">chercher</a></div>`;
+  const bits=[];
+  if(r.dir) bits.push('👤 '+r.dir);
+  if(r.creation) bits.push('créée en '+r.creation.slice(0,4));
+  if(r.eff) bits.push(r.eff);
+  if(r.ca!=null) bits.push(`CA ${fmtCA(r.ca)} (${r.caY})`);
+  const closed=r.etat==='C'?'<span class="reg-closed">❌ FERMÉE · </span>':'';
+  const unsure=r.sure?'':` · ⚠️ à vérifier (trouvé : ${esc(r.nom)})`;
+  return `<div class="c-meta">🏛 ${closed}${esc(bits.join(' · ')||r.nom)}${unsure} · <a href="https://annuaire-entreprises.data.gouv.fr/entreprise/${esc(r.siren)}" target="_blank" rel="noopener">fiche</a></div>`;
+}
+
+// ---------- Audit de présence en ligne (après l'appel, envoyé par mail) ----------
+function getSig(){ try{ return JSON.parse(lsGet('pp_sig','{}'))||{}; }catch(e){ return {}; } }
+function saveSig(k,v){ const s=getSig(); s[k]=v; lsSet('pp_sig',JSON.stringify(s)); }
+function domainOf(u){ return (u||'').replace(/^https?:\/\//,'').split('/')[0]; }
+function localDT(d){ const z=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`; }
+
+async function pageSpeed(url){
+  try{
+    const base=`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=mobile&category=performance&category=seo`;
+    let r=await fetch(apiKey?base+'&key='+encodeURIComponent(apiKey):base);
+    if(!r.ok&&apiKey) r=await fetch(base); // clé sans l'API PageSpeed activée → essai sans clé
+    const j=await r.json();
+    if(!r.ok||!j.lighthouseResult) return {err:true,quota:r.status===429||r.status===403};
+    const a=j.lighthouseResult.audits||{};
+    return {score:Math.round((j.lighthouseResult.categories?.performance?.score||0)*100), lcp:a['largest-contentful-paint']?.displayValue||'', viewport:a.viewport?a.viewport.score:null};
+  }catch(e){ return {err:true}; }
+}
+
+async function openAudit(id){
+  const p=byId(id); if(!p) return;
+  const w=window.open('','_blank');
+  if(!w){ toast('Autorise les fenêtres pop-up pour ce site'); return; }
+  w.document.write('<p style="font-family:sans-serif;padding:40px;color:#444">⏳ Préparation de l\'audit (jusqu\'à 30 s si je mesure son site)…</p>');
+  if(!p.reg) await checkReg(id,true);
+  const q=byId(id);
+  const psi=['ok','cheap','nohttps'].includes(q.siteType||siteType(q))&&q.website?await pageSpeed(q.website):null;
+  w.document.open(); w.document.write(auditHTML(q,psi)); w.document.close();
+}
+
+function auditSent(id){
+  const p=byId(id); if(!p||!p.suivi) return;
+  const d=new Date(); d.setDate(d.getDate()+2); d.setHours(10,0,0,0);
+  p.suivi.audit=Date.now();
+  p.suivi.notes.push({t:Date.now(),txt:'📄 Audit envoyé par mail. Rappel prévu dans 2 jours.'});
+  setField(id,'rappel',localDT(d));
+  toast('✅ Audit noté · rappel dans 2 jours');
+}
+
+function auditHTML(p,psi){
+  const t=p.siteType||siteType(p), metier=p.secteur||'artisan', ville=villeOf(p.adresse)||'Nantes';
+  const r=p.reg&&!p.reg.none?p.reg:null, dom=domainOf(p.website), sig=getSig(), s=p.suivi||{};
+  const today=new Date().toLocaleDateString('fr-FR');
+  const rappel=s.rappel?new Date(s.rappel).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}):'dans deux jours';
+  // Faits mesurés
+  const siteTxt={none:'Aucun site',pseudo:`Seulement ${dom} (pas un site à vous)`,nohttps:`${dom} · non sécurisé`,cheap:`${dom} · adresse gratuite`,ok:dom}[t];
+  const avis=p.reviews?`${p.reviews} avis · note ${String(p.rating).replace('.',',')} / 5`:'Aucun avis';
+  const speed=!psi?'—':psi.err?'Non mesuré':`${psi.score} / 100${psi.lcp?` · affichage en ${psi.lcp}`:''}`;
+  const mobile=!psi||psi.err||psi.viewport==null?'—':psi.viewport===1?'Oui':'Non';
+  // Points forts
+  const forts=[];
+  if(p.rating>=4.5&&p.reviews>=5) forts.push(`${p.reviews} avis Google avec une note de ${String(p.rating).replace('.',',')}/5 : vos clients sont contents. C'est votre meilleur argument.`);
+  if(r&&r.creation&&new Date().getFullYear()-(+r.creation.slice(0,4))>=5) forts.push(`Entreprise installée depuis ${r.creation.slice(0,4)} : un vrai gage de sérieux.`);
+  if(psi&&!psi.err&&psi.score>=80) forts.push(`Votre site s'affiche vite sur téléphone (${psi.score}/100).`);
+  // Problèmes : fait → conséquence
+  const pbs=[];
+  if(t==='none') pbs.push(`Pas de site internet → quand un client tape « ${metier} ${ville} » sur Google, il tombe sur vos concurrents qui en ont un.`);
+  if(t==='pseudo') pbs.push(`Votre seule vitrine est ${dom} → ce n'est pas un site à vous : on n'y voit pas clairement vos chantiers et vos prestations.`);
+  if(t==='nohttps') pbs.push('Votre site s\'affiche « Non sécurisé » dans le navigateur → des visiteurs repartent sans vous appeler.');
+  if(t==='cheap') pbs.push(`Votre site est sur une adresse gratuite (${dom}) → il paraît moins sérieux que ceux de vos concurrents.`);
+  if(psi&&!psi.err&&psi.score<50) pbs.push(`Votre site est lent sur téléphone (${psi.score}/100${psi.lcp?`, ${psi.lcp} pour s'afficher`:''}) → des visiteurs partent avant de voir vos chantiers.`);
+  if(psi&&!psi.err&&psi.viewport===0) pbs.push('Votre site ne s\'adapte pas au téléphone → il faut zoomer pour le lire.');
+  if(p.reviews>=3&&p.rating&&p.rating<4) pbs.push(`Note Google de ${String(p.rating).replace('.',',')}/5 → c'est la première chose que voit un client qui compare.`);
+  if((p.reviews||0)<5) pbs.push(`${p.reviews?'Seulement '+p.reviews+' avis':'Aucun avis'} sur Google → un client qui compare choisit souvent l'artisan qui en a le plus.`);
+  if(t==='none'&&p.rating>=4.5&&p.reviews>=5) pbs.push('Vos bons avis ne mènent nulle part → le client ne peut pas voir vos réalisations avant d\'appeler.');
+  const ph='[Ton observation : ex. aucune photo de chantier, pas de bouton pour appeler…]';
+  const li=a=>a.map(x=>`<li>${esc(x)}</li>`).join('');
+  const civ=r&&r.dir?esc(r.dir.replace(/\s*\(.*\)$/,'')):'';
+  const mailBody=`Bonjour${civ?' '+civ.split(' ')[0]:''},\n\nComme convenu au téléphone, voici l'audit de votre présence en ligne (en pièce jointe, 5 minutes de lecture).\n\nEn résumé : ${(pbs[0]||'').replace(' → ',', donc ')}\n\nJe vous rappelle ${rappel} pour en parler 10 minutes.\n\nBonne journée,\n${sig.nom||'Hugo'} – Novae Studio${sig.tel?'\n'+sig.tel:''}`;
+  const mailto=`mailto:${encodeURIComponent(s.mail||'')}?subject=${encodeURIComponent('Audit de votre présence en ligne – '+p.nom)}&body=${encodeURIComponent(mailBody)}`;
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Audit ${esc(p.nom)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14161f;--txt:#3b3f4e;--mut:#7a7f92;--acc:#2f5bea;--accd:#eaf0ff;--ok:#0f9d6b;--bad:#d64545;--line:#e4e6ee;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#eef0f5;font-family:Inter,sans-serif;color:var(--txt);}
+.bar{position:sticky;top:0;background:#14161f;color:#fff;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9;font-size:13px}
+.bar button,.bar a{background:#2f5bea;color:#fff;border:none;border-radius:8px;padding:9px 13px;font:600 13px Inter,sans-serif;cursor:pointer;text-decoration:none}
+.bar .g{background:#2b2f3f}.bar span{opacity:.7;margin-left:auto}
+.page{width:210mm;min-height:297mm;margin:18px auto;background:#fff;padding:20mm 18mm;box-shadow:0 4px 24px rgba(0,0,0,.08);display:flex;flex-direction:column;gap:14px}
+.brand{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);font-weight:700}
+.tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-weight:600;margin-top:10px}
+h1{font-size:34px;line-height:1.15;color:var(--ink);font-weight:800}
+h2{font-size:24px;color:var(--ink);font-weight:800;line-height:1.2}
+.lead{font-size:14px;line-height:1.6}
+.cover{margin-top:40mm;display:flex;flex-direction:column;gap:12px}
+.for{margin-top:auto;border-top:1px solid var(--line);padding-top:14px;font-size:13px;line-height:1.7}
+.for b{color:var(--ink);font-size:16px}
+.crit{display:grid;gap:10px;margin-top:6px}
+.crit div{display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.5}
+.crit i{font-style:normal;background:var(--accd);color:var(--acc);font-weight:700;border-radius:6px;padding:3px 7px;font-size:12px}
+.crit b{color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{padding:9px 10px;border-bottom:1px solid var(--line)}td:first-child{color:var(--mut);width:42%}td:last-child{color:var(--ink);font-weight:600}
+ul{padding-left:18px;display:grid;gap:7px;font-size:13px;line-height:1.55}
+.box{border-radius:10px;padding:12px 14px}.box.ok{background:#e9f8f1}.box.bad{background:#fdeeee}
+.box h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}.ok h3{color:var(--ok)}.bad h3{color:var(--bad)}
+li.ph{background:#fff6cc}
+.offer li::marker{content:'✓  ';color:var(--ok);font-weight:700}
+.cta{margin-top:auto;background:var(--ink);color:#fff;border-radius:12px;padding:18px;display:grid;gap:6px;font-size:13px}
+.cta b{font-size:18px}
+.note{font-size:10px;color:var(--mut)}
+[contenteditable]:hover{outline:1px dashed #b9c3e8}
+@media print{body{background:#fff}.bar{display:none}.page{margin:0;box-shadow:none;page-break-after:always;min-height:296mm}@page{size:A4;margin:0}li.ph{display:none}[contenteditable]:hover{outline:none}}
+@media (max-width:820px){.page{width:auto;min-height:auto;margin:10px;padding:22px}}
+</style></head><body>
+<div class="bar"><button onclick="print()">🖨 Enregistrer en PDF</button><a href="${esc(mailto)}" class="g">✉️ Préparer le mail</a><button class="g" onclick="try{opener.auditSent('${esc(p.id)}');this.textContent='✅ Noté'}catch(e){alert('Reviens sur ProspectPro pour noter l\\'envoi')}">✅ Envoyé : rappel dans 2 jours</button>${psi&&psi.err?`<b style="color:#fbbf24">⚠️ Vitesse non mesurée : active « PageSpeed Insights API » sur ta console Google (gratuit), ou le site est hors ligne.</b>`:''}<span>Clique sur un texte pour le modifier · les lignes jaunes ne s'impriment pas</span></div>
+<div contenteditable="true">
+<section class="page">
+  <div class="brand">Novae Studio</div>
+  <div class="cover">
+    <div class="tag">Audit de présence en ligne</div>
+    <h1>Comment attirer plus de clients grâce à votre présence sur internet ?</h1>
+    <p class="lead">Ce que voit un client qui vous cherche sur Google avant d'appeler. Uniquement des faits, mesurés avec des outils publics.</p>
+  </div>
+  <div class="tag">Ce que cherche un client avant de vous contacter</div>
+  <div class="crit">
+    <div><i>01</i><span><b>Des avis visibles.</b> La plupart des clients lisent les avis avant de choisir un artisan.</span></div>
+    <div><i>02</i><span><b>Des photos de vos réalisations.</b> Un avant / après, c'est la preuve de votre savoir-faire.</span></div>
+    <div><i>03</i><span><b>Votre zone d'intervention.</b> S'il ne la trouve pas vite, il passe au suivant.</span></div>
+    <div><i>04</i><span><b>Un moyen simple de vous joindre.</b> Un numéro qu'on touche pour appeler, un formulaire court.</span></div>
+    <div><i>05</i><span><b>Un site qui inspire confiance.</b> Il dit : cet artisan est sérieux.</span></div>
+  </div>
+  <div class="for">Préparé pour<br><b>${esc(p.nom)}</b><br>${esc(titleCase(metier))} · ${esc(ville)}<br>Par ${esc(sig.nom||'Hugo')}, Novae Studio · ${today}</div>
+</section>
+<section class="page">
+  <div class="brand">Novae Studio</div>
+  <h2>Votre présence en ligne, aujourd'hui.</h2>
+  <p class="lead">Aucune critique de goût. Seulement ce qu'un client voit.</p>
+  <table>
+    <tr><td>Site internet</td><td>${esc(siteTxt)}</td></tr>
+    <tr><td>Avis Google</td><td>${esc(avis)}</td></tr>
+    <tr><td>Vitesse sur téléphone (Google)</td><td>${esc(speed)}</td></tr>
+    <tr><td>Adapté au téléphone</td><td>${esc(mobile)}</td></tr>
+  </table>
+  ${forts.length?`<div class="box ok"><h3>Ce qui marche déjà</h3><ul>${li(forts)}</ul></div>`:''}
+  <div class="box bad"><h3>Ce qui vous fait perdre des clients</h3><ul>${li(pbs)}<li class="ph">${esc(ph)}</li></ul></div>
+  <p class="note">Mesuré le ${today} avec Google Maps, Google PageSpeed Insights et l'Annuaire des entreprises.</p>
+</section>
+<section class="page">
+  <div class="brand">Novae Studio</div>
+  <h2>Ce que je vous propose.</h2>
+  <p class="lead">Un site qui vous amène les bons chantiers.</p>
+  <ul class="offer">
+    <li><b>Vos chantiers en photo</b> : votre meilleur argument, c'est votre travail.</li>
+    <li><b>Trouvable sur Google</b> quand on tape « ${esc(metier)} ${esc(ville)} ».</li>
+    <li><b>Vos avis mis en avant</b>, pour rassurer avant l'appel.</li>
+    <li><b>Un bouton pour vous appeler</b> directement depuis le téléphone.</li>
+    <li><b>Parfait sur téléphone</b>, là où vos clients vous cherchent.</li>
+  </ul>
+  <p class="lead"><b>Offre de lancement :</b> site offert, 100 € de frais, en échange d'un avis écrit si vous êtes content.</p>
+  <div class="cta">
+    <b>On en parle 10 minutes ?</b>
+    <span>Je vous rappelle ${esc(rappel)}. Pas de jargon, pas de pression.</span>
+    <span>${esc(sig.nom||'Hugo')} · Novae Studio</span>
+    <span>📞 <span data-sig="tel">${esc(sig.tel||'[ton téléphone]')}</span> · ✉️ <span data-sig="mail">${esc(sig.mail||'[ton mail]')}</span></span>
+  </div>
+  <p class="note">Audit réalisé à partir de données publiques.</p>
+</section>
+</div>
+<script>document.querySelectorAll('[data-sig]').forEach(function(el){el.addEventListener('blur',function(){var v=el.textContent.trim();if(v&&v.charAt(0)!=='[')try{opener.saveSig(el.dataset.sig,v)}catch(e){}})});<\/script>
+</body></html>`;
 }
 
 // ---------- Suivi ----------
@@ -876,6 +1129,7 @@ function svCard(p){
     </div>
     <div class="sv-det">
       ${!p.manual&&p.why?`<div class="sv-sub">💡 ${esc(p.why)}${p.rating?` · ⭐${p.rating} (${p.reviews})`:''}</div>`:''}
+      ${regLine(p)}
       <div class="row2">
         <div><div class="lbl">Étape</div><select class="inp" onchange="setStatut('${id}',this.value)">${opts}</select></div>
         <div><div class="lbl">Rappel prévu</div><input class="inp" type="datetime-local" value="${esc(s.rappel)}" onchange="setField('${id}','rappel',this.value)"></div>
@@ -895,6 +1149,8 @@ function svCard(p){
       <div class="c-acts">
         ${p.adresse?`<div class="act" onclick="openMaps('${id}')">📍 Maps</div>`:''}
         ${p.website?`<a class="act" href="${esc(p.website)}" target="_blank" rel="noopener" style="text-decoration:none">🌐 Site</a>`:''}
+        <div class="act av" onclick="openAudit('${id}')">📄 Audit</div>
+        ${p.reg?'':`<div class="act" onclick="checkReg('${id}')">🏛 Registre</div>`}
         <div class="act" onclick="removeSuivi('${id}')" style="color:var(--red)">Retirer du suivi</div>
       </div>
     </div>
