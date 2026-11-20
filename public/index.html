@@ -224,7 +224,7 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
     </div>
     <div>
       <div class="fl">Site web</div>
-      <select class="sel" id="f-site" onchange="lsSet('pp_fsite',this.value);renderResults()">
+      <select class="sel" id="f-site" onchange="renderResults()">
         <option value="sans">Sans vrai site (aucun, Facebook, annuaire)</option>
         <option value="faible">Sans site ou site faible (gratuit, non sécurisé)</option>
         <option value="tous">Tous, même avec un vrai site</option>
@@ -574,7 +574,7 @@ function logout(msg){
 
 // ---------- Init / navigation ----------
 function init(){
-  const fsEl=document.getElementById('f-site'); if(fsEl) fsEl.value=lsGet('pp_fsite','sans');
+  const fsEl=document.getElementById('f-site'); if(fsEl) fsEl.value='sans'; // toujours « sans site » à l'ouverture : on ne reste pas bloqué sur « Tous »
   const saved=lsGet('gapi_key','');
   if(saved){ apiKey=saved; showOk(); }
   try{ const c=JSON.parse(lsGet('pp_cache','null')); if(c){ prospects=hydrate(c.prospects); blocked=c.blocked||[]; } }catch(e){}
@@ -710,6 +710,8 @@ function renderResults(){
   if(!act.length&&all.length){area.innerHTML=`<div class="empty"><div class="ei">🔎</div>Aucun prospect avec ce filtre.<br>${nSite?nSite+' masqué'+(nSite>1?'s':'')+' car ils ont un site. ':''}${nFr?nFr+' franchise'+(nFr>1?'s':'')+' masquée'+(nFr>1?'s':'')+'.':''}<br>Change le filtre « Site web » ou la ville.</div>`;return;}
   if(!act.length){area.innerHTML='<div class="empty"><div class="ei">🎯</div>'+(apiKey?'Lance une recherche':'Configure ta clé API et lance la recherche')+'</div>';return;}
   area.innerHTML='';
+  const fsv=(document.getElementById('f-site')||{}).value||'sans';
+  if(fsv!=='sans'){const w=document.createElement('div');w.className='pg-sub';w.style.cssText='margin:0 0 8px;color:#b45309;font-weight:600';w.textContent='Attention : tu vois aussi des prospects AVEC un site. Ils disent plus souvent non. Appelle en premier les « Sans vrai site ».';area.appendChild(w);}
   if(nSite||nFr){const n=document.createElement('div');n.className='pg-sub';n.style.margin='0 0 8px';n.textContent=`Masqués : ${nSite?nSite+' avec un site (filtre « Site web »)':''}${nSite&&nFr?' · ':''}${nFr?nFr+' franchise'+(nFr>1?'s':''):''}`;area.appendChild(n);}
   const groups=[
     ['top','🎯 Cibles prioritaires'],
