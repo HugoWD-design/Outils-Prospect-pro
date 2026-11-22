@@ -8,11 +8,21 @@ const FIELDS = [
   'places.nationalPhoneNumber', 'places.rating', 'places.userRatingCount', 'nextPageToken',
 ].join(',');
 
-async function searchNew(query, apiKey) {
+// rect = "latBas,lngGauche,latHaut,lngDroite" : limite la recherche à une zone (recherche par quartiers)
+function parseRect(rect) {
+  const n = String(rect || '').split(',').map(Number);
+  if (n.length !== 4 || n.some(x => !Number.isFinite(x))) return null;
+  return { rectangle: { low: { latitude: n[0], longitude: n[1] }, high: { latitude: n[2], longitude: n[3] } } };
+}
+
+async function searchNew(query, apiKey, { rect, pages } = {}) {
   const results = [];
   let pageToken = '';
-  for (let i = 0; i < MAX_PAGES; i++) {
-    const body = { textQuery: query, languageCode: 'fr', pageSize: 20 };
+  const zone = parseRect(rect);
+  const maxPages = Math.min(MAX_PAGES, Math.max(1, parseInt(pages, 10) || MAX_PAGES));
+  for (let i = 0; i < maxPages; i++) {
+    const body = { textQuery: query, languageCode: 'fr', pageSize: maxPages === 1 ? 5 : 20 };
+    if (zone) body.locationRestriction = zone;
     if (pageToken) body.pageToken = pageToken;
     const resp = await fetch('https://places.googleapis.com/v1/places:searchText', {
       method: 'POST',
@@ -78,13 +88,15 @@ export default async function handler(req, res) {
 
   const query = req.method === 'POST' ? req.body?.query : req.query?.query;
   const apiKey = req.method === 'POST' ? req.body?.apiKey : req.query?.apiKey;
+  const src = req.method === 'POST' ? (req.body || {}) : (req.query || {});
+  const opts = { rect: src.rect, pages: src.pages };
   if (!query || !apiKey) {
     return res.status(400).json({ error: 'Paramètres manquants', query, apiKey: apiKey ? 'présente' : 'absente' });
   }
 
   try {
     try {
-      const results = await searchNew(query, apiKey);
+      const results = await searchNew(query, apiKey, opts);
       return res.status(200).json({ results, total: results.length, api: 'new' });
     } catch (e) {
       // Nouvelle API pas activée (ou clé limitée à l'ancienne) → on se rabat sur l'ancienne
