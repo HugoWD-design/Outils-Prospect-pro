@@ -190,22 +190,6 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
     <button class="edit-key-btn" onclick="editKey()">✏️ Modifier</button>
   </div>
   <div class="filters">
-    <div>
-      <div class="fl">Source</div>
-      <select class="sel" id="f-src" onchange="srcChanged()">
-        <option value="google">Google Maps (entreprises visibles)</option>
-        <option value="new">🆕 Nouvelles entreprises (registre officiel)</option>
-      </select>
-    </div>
-    <div id="f-age-box" style="display:none">
-      <div class="fl">Créées depuis</div>
-      <select class="sel" id="f-age">
-        <option value="3">Moins de 3 mois</option>
-        <option value="6" selected>Moins de 6 mois</option>
-        <option value="12">Moins de 12 mois</option>
-      </select>
-      <div class="pg-sub" style="margin-top:4px">Le registre ne donne pas le téléphone : bouton « 📞 Trouver le numéro » sur chaque fiche (1 recherche Google).</div>
-    </div>
     <div id="f-deep-box">
       <label class="pg-sub" style="display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="f-deep"> Recherche par quartiers : jusqu'à 4× plus de résultats (coûte 4× plus de recherches Google)</label>
     </div>
@@ -466,8 +450,6 @@ function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 function byId(id){return prospects.find(x=>x.id===id);}
 function touch(p){p.u=Date.now();}
-function fmtDay(s){const m=(s||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[3]}/${m[2]}/${m[1]}`:'?';}
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function fmt(d){return d.toLocaleString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}
 function endOfToday(){const d=new Date();d.setHours(23,59,59,999);return d;}
 function newSuivi(st){return {statut:st,ajoute:Date.now(),tentatives:0,rappel:'',mail:'',raison:'',notes:[],hist:[]};}
@@ -508,12 +490,6 @@ function scoreP(p){
   else if(r<=100){score+=5;}
   else if(r>300){score-=15;why.push('très établi : risque "pas besoin"');}
   if(PRIO.includes(p.secteur)){score+=10;}
-  if(p.src==='sirene'){
-    score+=10;
-    if(p.telNone) why[0]=p.gid?'fiche Google sans numéro':'pas trouvé sur Google';
-    else if(!p.gid) why[0]='numéro et site pas encore cherchés';
-    why.unshift('🆕 créée le '+fmtDay(p.reg&&p.reg.creation));
-  }
   score=Math.max(5,Math.min(99,score));
   const qualif=score>=70?'top':score>=50?'mid':'low';
   const franchise=isFranchise(p);
@@ -716,15 +692,7 @@ async function placesSearch(params){
   return data;
 }
 
-function srcChanged(){
-  const isNew=document.getElementById('f-src').value==='new';
-  document.getElementById('f-age-box').style.display=isNew?'block':'none';
-  document.getElementById('f-deep-box').style.display=isNew?'none':'block';
-  renderResults();
-}
-
 async function doSearch(){
-  if(document.getElementById('f-src').value==='new') return doSearchNew();
   if(!apiKey){toast('Configure ta clé API d\'abord');return;}
   const btn=document.getElementById('go-btn');
   btn.disabled=true;
@@ -782,85 +750,6 @@ async function doSearch(){
   btn.disabled=false;
 }
 
-// ---------- Nouvelles entreprises (registre officiel, codes NAF du bâtiment) ----------
-const NAF={peintre:['43.34Z'],plombier:['43.22A'],chauffagiste:['43.22B'],'électricien':['43.21A'],charpentier:['43.91A'],couvreur:['43.91B','43.99A'],menuisier:['43.32A'],serrurier:['43.32B'],carreleur:['43.33Z'],plaquiste:['43.31Z','43.29A'],'maçon':['43.99C','41.20A'],terrassier:['43.12A'],paysagiste:['81.30Z'],'façadier':['43.99D']};
-const NAF_SECT=Object.fromEntries(Object.entries(NAF).flatMap(([k,v])=>v.map(c=>[c,k])));
-const REG_MAX_PAGES=40; // 40 × 25 = 1 000 entreprises lues au maximum
-
-async function doSearchNew(){
-  const naf=[...new Set([...activeChips].flatMap(x=>NAF[x]||[]))];
-  if(!naf.length){toast('Choisis au moins un métier du bâtiment');return;}
-  const btn=document.getElementById('go-btn'); btn.disabled=true;
-  const area=document.getElementById('results');
-  area.innerHTML='<div class="loading"><div class="spin"></div>Lecture du registre officiel…</div>';
-  const ville=document.getElementById('f-ville').value;
-  try{
-    const codes=(await Promise.all(communesOf(ville).map(geoCommune))).map(c=>c.code);
-    const months=+document.getElementById('f-age').value||6;
-    const cut=new Date(); cut.setMonth(cut.getMonth()-months); const cutS=cut.toISOString().slice(0,10);
-    const found=[]; let page=1,pages=1,total=0;
-    do{
-      const url=`${REG_URL}?activite_principale=${naf.join(',')}&code_commune=${codes.join(',')}&etat_administratif=A&per_page=25&page=${page}`;
-      let r=await fetch(url);
-      if(r.status===429){ await sleep(1200); r=await fetch(url); }
-      if(!r.ok) throw new Error('registre '+r.status);
-      const j=await r.json(); total=j.total_pages||1; pages=Math.min(total,REG_MAX_PAGES);
-      found.push(...(j.results||[]));
-      area.innerHTML=`<div class="loading"><div class="spin"></div>Lecture du registre officiel… ${page}/${pages}</div>`;
-      page++; await sleep(200); // l'API accepte ~7 requêtes/s
-    }while(page<=pages);
-    const now=Date.now(); let added=0,known=0,optout=0;
-    for(const e of found){
-      if((e.date_creation||'')<cutS) continue;
-      if(e.opposition_diffusion_commerciale){optout++;continue;} // refuse la prospection : on respecte
-      const id='sir_'+e.siren, ex=byId(id);
-      if(blocked.includes(id)||(ex&&(ex.suivi||ex.archived))||prospects.some(p=>p.suivi&&p.reg&&p.reg.siren===e.siren)){known++;continue;}
-      if(ex) continue;
-      const et=(e.matching_etablissements||[]).find(m=>codes.includes(m.commune))||e.siege||{};
-      const raw=(et.liste_enseignes||[])[0]||et.nom_commercial||e.nom_complet||'';
-      if(!raw||/non.diffusible/i.test(raw)) continue;
-      prospects.unshift(scoreP({id,src:'sirene',nom:titleCase(raw),adresse:titleCase(et.adresse||''),
-        secteur:NAF_SECT[et.activite_principale||e.activite_principale]||'artisan',tel:'',website:'',hasWebsite:false,rating:0,reviews:0,createdAt:now,u:now,
-        reg:{siren:e.siren,nom:e.nom_complet||'',etat:'A',creation:e.date_creation||'',eff:TRANCHE[e.tranche_effectif_salarie]||'',ca:null,caY:'',dir:pickDir(e.dirigeants),sure:true,t:now}}));
-      added++;
-    }
-    save(); renderResults();
-    toast(`🆕 ${added} créées depuis le ${fmtDay(cutS)}${known?` · ${known} déjà traitées`:''}${optout?` · ${optout} refusent la prospection`:''}`);
-    if(total>REG_MAX_PAGES) setTimeout(()=>toast('⚠️ Zone trop large : choisis moins de métiers pour tout voir'),3200);
-  }catch(e){
-    area.innerHTML=`<div class="empty"><div class="ei">⚠️</div>Registre injoignable (${esc(e.message)}).<br>Réessaie dans une minute.</div>`;
-  }
-  btn.disabled=false;
-}
-
-// Trouve le téléphone (et le site) d'une nouvelle entreprise sur Google : 1 recherche
-async function findTel(id,quiet){
-  const p=byId(id); if(!p) return;
-  if(!apiKey){toast('Configure ta clé API d\'abord');return;}
-  try{
-    const data=await placesSearch({query:`${p.nom} ${villeOf(p.adresse)}`.trim(),pages:1});
-    const cp=cpOf(p.adresse); let best=null,bs=0;
-    for(const r of (data&&data.results)||[]){
-      const n=Math.max(nameScore(p.nom,r.nom),nameScore((p.reg&&p.reg.nom)||'',r.nom));
-      const sc=n+(cp&&cpOf(r.adresse)===cp?0.3:0);
-      if(n>=0.5&&sc>bs){bs=sc;best=r;}
-    }
-    if(best){
-      Object.assign(p,{tel:best.tel||'',website:best.website||'',hasWebsite:!!best.website,rating:best.rating||0,reviews:best.reviews||0,gid:best.id,telNone:!best.tel});
-      if((best.tel&&suiviTels().has(normTel(best.tel)))||blocked.includes(best.id)){ p.archived=true; if(!quiet) toast('Déjà traité (même numéro)'); }
-      else if(!quiet) toast(best.tel?'📞 Numéro trouvé':'Fiche Google trouvée, sans numéro');
-    } else { p.telNone=true; if(!quiet) toast('Pas trouvé sur Google'); }
-    Object.assign(p,scoreP(p)); touch(p); save(); renderResults();
-  }catch(e){ if(e.invalidKey) toast('Clé API invalide'); else if(!quiet) toast('⚠️ Recherche impossible, réessaie'); }
-}
-function pendingTel(){ return activeResults().act.filter(p=>p.src==='sirene'&&!p.gid&&!p.telNone).map(p=>p.id); }
-async function findTelAll(){
-  const ids=pendingTel(); if(!ids.length){toast('Rien à chercher');return;}
-  if(!confirm(`${ids.length} recherches Google (1 000 gratuites par mois). On y va ?`)) return;
-  for(const id of ids) await findTel(id,true);
-  toast('📞 Numéros cherchés');
-}
-
 function getQI(p){
   if(p.qualif==='top')return{cls:'ct',bdg:'bt',lbl:'🎯 Prioritaire'};
   if(p.qualif==='mid')return{cls:'cm',bdg:'bm',lbl:'⚠️ À creuser'};
@@ -868,8 +757,7 @@ function getQI(p){
 }
 
 function activeResults(){
-  const isNew=(document.getElementById('f-src')||{}).value==='new';
-  const all=prospects.filter(p=>p.nom&&!p.archived&&!p.suivi&&(isNew?p.src==='sirene':p.src!=='sirene'));
+  const all=prospects.filter(p=>p.nom&&!p.archived&&!p.suivi);
   const fs=(document.getElementById('f-site')||{}).value||'sans';
   const okSite=fs==='sans'?['none','pseudo']:fs==='faible'?['none','pseudo','nohttps','cheap']:null;
   const act=all.filter(p=>!p.franchise&&(!okSite||okSite.includes(p.siteType))).sort((a,b)=>(b.score||0)-(a.score||0));
@@ -884,8 +772,6 @@ function renderResults(){
   if(!act.length&&all.length){area.innerHTML=`<div class="empty"><div class="ei">🔎</div>Aucun prospect avec ce filtre.<br>${nSite?nSite+' masqué'+(nSite>1?'s':'')+' car ils ont un site. ':''}${nFr?nFr+' franchise'+(nFr>1?'s':'')+' masquée'+(nFr>1?'s':'')+'.':''}<br>Change le filtre « Site web » ou la ville.</div>`;return;}
   if(!act.length){area.innerHTML='<div class="empty"><div class="ei">🎯</div>'+(apiKey?'Lance une recherche':'Configure ta clé API et lance la recherche')+'</div>';return;}
   area.innerHTML='';
-  const pend=pendingTel().length;
-  if(pend){const b=document.createElement('button');b.className='btn';b.style.marginBottom='8px';b.textContent=`📞 Trouver tous les numéros (${pend} recherches Google)`;b.onclick=findTelAll;area.appendChild(b);}
   const fsv=(document.getElementById('f-site')||{}).value||'sans';
   if(fsv!=='sans'){const w=document.createElement('div');w.className='pg-sub';w.style.cssText='margin:0 0 8px;color:#b45309;font-weight:600';w.textContent='Attention : tu vois aussi des prospects AVEC un site. Ils disent plus souvent non. Appelle en premier les « Sans vrai site ».';area.appendChild(w);}
   if(nSite||nFr){const n=document.createElement('div');n.className='pg-sub';n.style.margin='0 0 8px';n.textContent=`Masqués : ${nSite?nSite+' avec un site (filtre « Site web »)':''}${nSite&&nFr?' · ':''}${nFr?nFr+' franchise'+(nFr>1?'s':''):''}`;area.appendChild(n);}
@@ -910,8 +796,7 @@ function makeCard(p){
   const em=EM[p.secteur]||'🏢';
   const sc=p.score||50;
   const scC=sc>=70?'var(--green)':sc>=45?'var(--amber)':'var(--red)';
-  const unk=p.src==='sirene'&&!p.gid;
-  const siteInfo=unk?'🌐 site inconnu':p.hasWebsite?`🌐 <a href="${esc(p.website)}" target="_blank" rel="noopener" style="color:inherit">${esc(p.website.replace(/https?:\/\//,'').split('/')[0])}</a>`:'❌ Aucun site web';
+  const siteInfo=p.hasWebsite?`🌐 <a href="${esc(p.website)}" target="_blank" rel="noopener" style="color:inherit">${esc(p.website.replace(/https?:\/\//,'').split('/')[0])}</a>`:'❌ Aucun site web';
   const div=document.createElement('div');
   div.className='card '+qi.cls;
   div.innerHTML=`
@@ -923,7 +808,7 @@ function makeCard(p){
       </div>
       <div class="c-bdg ${qi.bdg}">${qi.lbl}</div>
     </div>
-    <div class="c-why">${siteInfo}${p.tel?' · 📞 '+esc(p.tel):p.src==='sirene'?' · 📵 numéro inconnu':''}</div>
+    <div class="c-why">${siteInfo}${p.tel?' · 📞 '+esc(p.tel):''}</div>
     ${p.why?`<div class="c-meta">💡 ${esc(p.why)}</div>`:''}
     ${p.adresse?`<div class="c-meta">📍 ${esc(p.adresse)}</div>`:''}
     ${regLine(p)}
@@ -932,8 +817,6 @@ function makeCard(p){
       <div class="st" style="color:${scC}">${sc}%</div>
     </div>
     <div class="c-acts">
-      ${unk&&!p.telNone?`<div class="act av" onclick="findTel('${p.id}')">📞 Trouver le numéro</div>`:''}
-      ${p.src==='sirene'&&p.telNone?`<a class="act" href="https://www.google.com/search?q=${encodeURIComponent(p.nom+' '+villeOf(p.adresse))}" target="_blank" rel="noopener" style="text-decoration:none">🔎 Chercher sur Google</a>`:''}
       <div class="act av" onclick="toSuivi('${p.id}')">➕ À appeler</div>
       ${p.adresse?`<div class="act" onclick="openMaps('${p.id}')">📍 Maps</div>`:''}
       ${p.reg?'':`<div class="act" onclick="checkReg('${p.id}')">🏛 Registre</div>`}
