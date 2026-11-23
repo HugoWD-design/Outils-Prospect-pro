@@ -229,16 +229,16 @@ body{background:var(--ink);color:var(--txt);font-family:'Inter',sans-serif;min-h
         <div class="chip on" data-v="paysagiste">🌿 Paysagiste</div>
         <div class="chip on" data-v="menuisier">🪵 Menuisier</div>
         <div class="chip on" data-v="couvreur">🏠 Couvreur</div>
-        <div class="chip" data-v="maçon">🏗 Maçon</div>
-        <div class="chip" data-v="plombier">🔧 Plombier</div>
-        <div class="chip" data-v="électricien">⚡ Électricien</div>
-        <div class="chip" data-v="carreleur">🧱 Carreleur</div>
-        <div class="chip" data-v="plaquiste">📐 Plaquiste</div>
-        <div class="chip" data-v="chauffagiste">🔥 Chauffagiste</div>
-        <div class="chip" data-v="charpentier">🪚 Charpentier</div>
-        <div class="chip" data-v="serrurier">🔑 Serrurier</div>
-        <div class="chip" data-v="façadier">🏢 Façadier</div>
-        <div class="chip" data-v="terrassier">🚜 Terrassier</div>
+        <div class="chip on" data-v="maçon">🏗 Maçon</div>
+        <div class="chip on" data-v="plombier">🔧 Plombier</div>
+        <div class="chip on" data-v="électricien">⚡ Électricien</div>
+        <div class="chip on" data-v="carreleur">🧱 Carreleur</div>
+        <div class="chip on" data-v="plaquiste">📐 Plaquiste</div>
+        <div class="chip on" data-v="chauffagiste">🔥 Chauffagiste</div>
+        <div class="chip on" data-v="charpentier">🪚 Charpentier</div>
+        <div class="chip on" data-v="serrurier">🔑 Serrurier</div>
+        <div class="chip on" data-v="façadier">🏢 Façadier</div>
+        <div class="chip on" data-v="terrassier">🚜 Terrassier</div>
         <div class="chip" data-v="garage automobile">🚗 Garage</div>
         <div class="chip" data-v="institut beauté">💅 Esthétique</div>
         <div class="chip" data-v="coiffeur">✂️ Coiffeur</div>
@@ -421,7 +421,7 @@ let period = 'day';
 const drafts = {};
 const closedGroups = new Set(['signe','perdu']);
 const EM = {restaurant:'🍽',coiffeur:'✂️','garage automobile':'🚗',paysagiste:'🌿',plombier:'🔧',maçon:'🏗',couvreur:'🏠',peintre:'🎨',menuisier:'🪵','institut beauté':'💅',boulangerie:'🥐',pharmacie:'💊','électricien':'⚡',carreleur:'🧱',plaquiste:'📐',chauffagiste:'🔥',charpentier:'🪚',serrurier:'🔑','façadier':'🏢',terrassier:'🚜'};
-const activeChips = new Set(['peintre','paysagiste','menuisier','couvreur']);
+const activeChips = new Set([...document.querySelectorAll('#chips .chip.on')].map(c=>c.dataset.v)); // source unique : les chips « on » du HTML
 
 // ---------- Étapes du suivi (calquées sur la Méthode de prospection) ----------
 const ST = [
